@@ -1,0 +1,22 @@
+.chatRoom {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.messages {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+  }
+}
