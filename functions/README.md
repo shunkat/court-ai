@@ -6,6 +6,7 @@ $ genkit start
 ```
 
 // Auth JSON
+
 ```json
 {
   "uid": 0,
@@ -14,6 +15,7 @@ $ genkit start
 ```
 
 ## Deploy
+
 ```
 // root
 $ firebase deploy --only functions
