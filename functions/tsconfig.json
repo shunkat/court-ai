@@ -1,16 +1,16 @@
 {
-  "extends": "../../tsconfig.json",
-  "compileOnSave": true,
-  "include": ["src"],
   "compilerOptions": {
-    "target": "es2017",
     "module": "commonjs",
-    "moduleResolution": "node",
     "noImplicitReturns": true,
+    "noUnusedLocals": true,
     "outDir": "lib",
+    "moduleResolution": "node",
     "sourceMap": true,
     "strict": true,
+    "target": "es2017",
     "skipLibCheck": true,
     "esModuleInterop": true
-  }
+  },
+  "compileOnSave": true,
+  "include": ["src"]
 }

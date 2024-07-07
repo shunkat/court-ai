@@ -35,8 +35,6 @@ test/traces
 **/.#*
 .nvmrc
 
-**/.env*.local
-
 pr-stats.md
 test-timings.json
 
@@ -48,6 +46,3 @@ test-timings.json
 *.tsbuildinfo
 .swc/
 .turbo
-
-# build
-packages/models/lib
