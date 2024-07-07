@@ -48,3 +48,6 @@ test-timings.json
 *.tsbuildinfo
 .swc/
 .turbo
+
+# build
+packages/models/lib
