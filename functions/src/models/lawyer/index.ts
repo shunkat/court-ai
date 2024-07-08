@@ -4,26 +4,23 @@ import { geminiPro } from '@genkit-ai/googleai';
 import { z } from 'zod';
 import { lawyerSystemPrompt } from './prompt';
 import { defineFlow } from '@genkit-ai/flow';
+import { inputSchema } from './schema';
 
 export const lawyerSuggestionFlow = defineFlow(
   {
     name: 'lawyerSuggestionFlow',
-    inputSchema: z.string(),
+    inputSchema: inputSchema,
     outputSchema: z.string(),
-    // authPolicy: firebaseAuth((user) => {
-    //   if (!user.email_verified) {
-    //     throw new Error('Verified email required to run flow');
-    //   }
-    // }),
   },
-  async (prompt) => {
+  async (input) => {
     const history: MessageData[] = [
       { role: 'system', content: [{ text: lawyerSystemPrompt }] },
+      ...input.history.map((h) => ({ role: h.role, content: [{ text: h.message }] })),
     ];
 
     const llmResponse = await generate({
       model: geminiPro,
-      prompt,
+      prompt: input.prompt,
       history,
       config: { temperature: 1 },
     });
