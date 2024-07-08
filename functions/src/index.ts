@@ -1,2 +1,2 @@
 import './config';
-export { onChatDocumentCreated as onChannelCreated } from './api';
+export { onChatDocumentCreated } from './api';
