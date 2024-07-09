@@ -17,6 +17,7 @@ type OppositeProps = {
 };
 
 type Props = OwnProps | OppositeProps;
+export type { Props as MessageBlockProps };
 
 export default function MessageBlock(props: Props) {
   return (

@@ -1,0 +1,29 @@
+{
+  "name": "resort-shared",
+  "version": "1.0.2",
+  "description": "shared resources for resort coorperate site.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d-nakajima/resort-cp.git"
+  },
+  "author": "Daishi Nakajima",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/d-nakajima/resort-cp/issues"
+  },
+  "homepage": "https://github.com/d-nakajima/resort-cp#readme",
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@firebase/firestore": "^4.6.4",
+    "firebase-admin": "^12.2.0"
+  }
+}

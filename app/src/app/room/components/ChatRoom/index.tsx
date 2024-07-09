@@ -3,12 +3,6 @@ import { use, useState } from "react";
 import style from "./style.module.scss";
 import MessageBlock from "../MessageBlock";
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
-
 export default function ChatRoom(props: Props) {
   const { messages, submit } = useChat();
 
