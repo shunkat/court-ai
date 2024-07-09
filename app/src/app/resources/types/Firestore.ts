@@ -1,20 +1,7 @@
-import * as Client from "firebase/firestore";
-import * as Admin from "firebase-admin/firestore";
-
 export type AppModel = {
   id: string;
   createdAt: Date;
   updatedAt: Date;
-};
-
-export type ClientResponse<T> = Omit<T, "createdAt" | "updatedAt"> & {
-  createdAt: Client.Timestamp;
-  updatedAt: Client.Timestamp;
-};
-
-export type AdminResponse<T> = Omit<T, "createdAt" | "updatedAt"> & {
-  createdAt: Admin.Timestamp;
-  updatedAt: Admin.Timestamp;
 };
 
 export type Department = {
@@ -27,86 +14,41 @@ export type Lawyer = {
 } & AppModel;
 
 export type User = {
-  name: string;
+  id: string; // auth.uid
 } & AppModel;
 
-export type RoomStatus = "created" | "wip" | "judge" | "completed";
+export type RoomUser = {
+  userId: string;
+  name: string;
+};
+
+export type RoomStatus = "created" | "judge" | "completed";
 export type Room = {
+  name: string;
+  category?: string;
   status: RoomStatus;
   judgeCount: 0 | 1 | 2 | 3;
-  creatorId: string;
-  oppositeId: string;
+  creatorId: string; // RoomUser
+  oppositeId?: string; // RoomUser
 } & AppModel;
 
 export type TextMessage = {
-  type: "text";
-  value: string;
-};
+  text: string;
+}[];
 
-export type Message = {
-  from:
-    | {
-        type: "user";
-        id: string;
-      }
-    | {
-        type: "lawyer";
-        id: string;
-        for: string;
-      }
-    | {
-        type: "judge";
-      };
+const MessageRole = ["user", "system", "model", "tool"] as const;
+// コレクション名: chats
+export type Chat = Claim | LawyerResponse;
+export type Claim = {
   roomId: string;
+  roomUserId: string;
   content: TextMessage;
+  role: "user";
 } & AppModel;
 
-type AdminConverter<T extends AppModel> = Admin.FirestoreDataConverter<T>;
-export function getAdminConverter<T extends AppModel>(): AdminConverter<T> {
-  return {
-    toFirestore(model: T): Admin.DocumentData {
-      const { id, ...data } = model;
-      return {
-        ...data,
-        createdAt:
-          Admin.Timestamp.fromDate(model.createdAt) ??
-          Admin.FieldValue.serverTimestamp(),
-        updatedAt: Admin.FieldValue.serverTimestamp(),
-      };
-    },
-    fromFirestore(snapshot: Admin.QueryDocumentSnapshot): T {
-      const data = snapshot.data();
-      return {
-        id: snapshot.id,
-        ...data,
-        createdAt: data.createdAt.toDate(),
-        updatedAt: data.updatedAt.toDate(),
-      } as T;
-    },
-  };
-}
-
-type ClientConverter<T extends AppModel> = Client.FirestoreDataConverter<T>;
-export function getClientConverter<T extends AppModel>(): ClientConverter<T> {
-  return {
-    toFirestore(model: T): Admin.DocumentData {
-      const { id, ...data } = model;
-      return {
-        ...data,
-        createdAt:
-          Admin.Timestamp.fromDate(model.createdAt) ??
-          Admin.FieldValue.serverTimestamp(),
-        updatedAt: Admin.FieldValue.serverTimestamp(),
-      };
-    },
-    fromFirestore(snapshot: Client.QueryDocumentSnapshot): T {
-      const data = snapshot.data();
-      return {
-        id: snapshot.id,
-        ...data,
-        createdAt: data.createdAt.toDate(),
-        updatedAt: data.updatedAt.toDate(),
-      } as T;
-    },
-  };
-}
+export type LawyerResponse = {
+  roomId: string;
+  roomUserId: string;
+  content: TextMessage;
+  role: "model";
+} & AppModel;

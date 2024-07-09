@@ -1,8 +1,9 @@
+import { getAdminConverter } from "@/app/resources/types/AdminFirestore";
 import ChatRoom from "../components/ChatRoom";
 import ChatRoomProvider from "../components/ChatRoomProvider";
 import style from "./style.module.scss";
-import { Message, getAdminConverter } from "@/app/resources/types/Firestore";
 import { AdminFirestore } from "@/lib/firebaseAdmin";
+import { Chat } from "@/app/resources/types/Firestore";
 
 type Props = {
   params: {
@@ -11,10 +12,11 @@ type Props = {
 };
 
 export default async function RoomPage(props: Props) {
-  const initialMessages = await AdminFirestore.collection("messages")
-    .withConverter(getAdminConverter<Message>())
-    .where("roomId", "==", props.params.id)
-    .limit(30)
+  const initialMessages = await AdminFirestore.collection("chats")
+    .withConverter(getAdminConverter<Chat>())
+    .where("roomUserId", "==", "dummy")
+    .orderBy("createdAt")
+    .limitToLast(30)
     .get()
     .then((snapshot) => snapshot.docs.map((doc) => doc.data()));
 

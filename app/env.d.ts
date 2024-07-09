@@ -12,7 +12,7 @@ declare global {
       NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: string;
       FIREBASE_ADMIN_PROJECT_ID: string;
       FIREBASE_ADMIN_PRIVATE_KEY: string;
-      FIREBASE_ADMIN_CLIENTEMAIL: string;
+      FIREBASE_ADMIN_CLIENT_EMAIL: string;
     }
   }
 }

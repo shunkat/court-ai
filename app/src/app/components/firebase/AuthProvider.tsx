@@ -16,9 +16,10 @@ import {
   signInAnonymously,
   signOut,
 } from "firebase/auth";
-import { User, getClientConverter } from "@/app/resources/types/Firestore";
+import { User } from "@/app/resources/types/Firestore";
 import { doc, getFirestore } from "firebase/firestore/lite";
 import { getDoc } from "firebase/firestore";
+import { getClientConverter } from "@/app/resources/types/ClientFirestore";
 
 interface AuthContextType {
   authUser?: AuthUser;
@@ -72,8 +73,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
     if (user) return;
     if (auth.currentUser) return;
 
-    // TODO: Google認証
-    signInAnonymously(auth);
+    // signInAnonymously(auth);
   }, [user, auth]);
 
   useEffect(() => {

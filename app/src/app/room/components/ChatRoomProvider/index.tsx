@@ -1,10 +1,12 @@
-import { Message } from "@/app/resources/types/Firestore";
-import * as Admin from "firebase-admin/firestore";
+"use client";
+import { getClientConverter } from "@/app/resources/types/ClientFirestore";
+import { Chat } from "@/app/resources/types/Firestore";
 import {
   Timestamp,
   addDoc,
   collection,
   getFirestore,
+  limitToLast,
   onSnapshot,
   orderBy,
   query,
@@ -14,7 +16,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 interface ChatRoomContextType {
   roomId: string;
-  messages: Message[];
+  messages: Chat[];
   submit: (message: string) => void;
 }
 
@@ -33,24 +35,24 @@ export function useChatRoom() {
 
 export default function ChatRoomProvider(props: {
   roomId: string;
-  initialMessages: Message[];
+  initialMessages: Chat[];
   children: React.ReactNode;
 }) {
-  const [messages, setMessages] = useState<Message[]>(props.initialMessages);
+  const [messages, setMessages] = useState<Chat[]>(props.initialMessages);
 
   useEffect(() => {
     const _query = query(
-      collection(getFirestore(), "messages"),
-      where("roomId", "==", props.roomId),
+      collection(getFirestore(), "chats"),
+      where("roomUserId", "==", "dummy"),
       where("createdAt", ">", Timestamp.now()),
       orderBy("createdAt")
     );
     const unsubscribe = onSnapshot(_query, (snapshot) => {
-      const messages: Message[] = [];
+      const newMessages: Chat[] = [];
       snapshot.forEach((doc) => {
-        messages.push(doc.data() as Message);
+        newMessages.push(doc.data() as Chat);
       });
-      setMessages(messages);
+      setMessages([...messages, ...newMessages]);
     });
 
     return () => {
@@ -59,19 +61,23 @@ export default function ChatRoomProvider(props: {
   }, []);
 
   const submit = async (message: string) => {
-    await addDoc(collection(getFirestore(), "messages"), {
-      from: {
-        type: "user",
-        id: "user1",
-      },
-      roomId: props.roomId,
-      content: {
-        type: "text",
-        value: message,
-      },
-      createdAt: Admin.FieldValue.serverTimestamp(),
-      updatedAt: Admin.FieldValue.serverTimestamp(),
-    });
+    await addDoc(
+      collection(getFirestore(), "chats").withConverter(
+        getClientConverter<Chat>()
+      ),
+      {
+        roomUserId: "dummy",
+        roomId: props.roomId,
+        role: "user",
+        content: [
+          {
+            text: message,
+          },
+        ],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      } as Chat
+    );
   };
 
   return (
