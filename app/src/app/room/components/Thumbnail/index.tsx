@@ -1,4 +1,4 @@
-import AppImage from "@/app/components/AppImage";
+import AppImage from "@/app/_components/AppImage";
 import style from "./style.module.scss";
 
 type Props = {

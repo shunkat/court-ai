@@ -11,19 +11,21 @@ import React, {
 } from "react";
 import {
   User as AuthUser,
+  GoogleAuthProvider,
   getAuth,
   onAuthStateChanged,
   signInAnonymously,
+  signInWithCredential,
+  signInWithPopup,
   signOut,
 } from "firebase/auth";
 import { User } from "@/app/resources/types/Firestore";
 import { doc, getFirestore } from "firebase/firestore/lite";
-import { getDoc } from "firebase/firestore";
+import { getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { getClientConverter } from "@/app/resources/types/ClientFirestore";
 
 interface AuthContextType {
   authUser?: AuthUser;
-  user?: User;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -40,7 +42,6 @@ interface Props {
 }
 
 const AuthProvider: React.FC<Props> = ({ children }) => {
-  const [user, setUser] = useState<User>();
   const [authUser, setAuthUser] = useState<AuthUser>();
   const auth = useMemo(() => getAuth(), []);
   const firestore = useMemo(() => getFirestore(), []);
@@ -56,29 +57,29 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
           doc(firestore, "users", user.uid).withConverter(
             getClientConverter<User>()
           )
-        ).then((doc) => {
-          if (doc.exists()) {
-            const data = doc.data() as User;
-            setUser(data);
-          }
+        ).then((_doc) => {
+          // if (_doc.exists()) {
+          //   const data = _doc.data() as User;
+          // } else {
+          //   setDoc(doc(firestore, "users", user.uid), {
+          //     createdAt: serverTimestamp(),
+          //     updatedAt: serverTimestamp(),
+          //   });
+          // }
         });
       } else {
-        setUser(undefined);
       }
     });
     return unsubscribe;
   }, []);
 
   const login = useCallback(async () => {
-    if (user) return;
-    if (auth.currentUser) return;
-
-    // signInAnonymously(auth);
-  }, [user, auth]);
-
-  useEffect(() => {
-    login();
-  }, [login]);
+    if (auth.currentUser) {
+      setAuthUser(auth.currentUser);
+      return;
+    }
+    signInWithPopup(auth, new GoogleAuthProvider());
+  }, [auth]);
 
   const logout = useCallback(async () => {
     try {
@@ -89,7 +90,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   }, [auth]);
 
   return (
-    <AuthContext.Provider value={{ user, authUser, login, logout }}>
+    <AuthContext.Provider value={{ authUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -15,7 +15,7 @@ export default function ChatRoom() {
           message.content.map((content, cIndex) => (
             <div key={`${mIndex}_${cIndex}`} className={style.message}>
               <MessageBlock
-                isOwn={mIndex % 2 === 0}
+                isOwn={message.role === "user"}
                 user={{
                   name: "User",
                   thumbnailSrc: "https://picsum.photos/200",
