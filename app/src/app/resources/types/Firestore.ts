@@ -20,7 +20,7 @@ export type User = {
 export type RoomUser = {
   userId: string;
   name: string;
-};
+} & AppModel;
 
 export type RoomStatus = "created" | "judge" | "completed";
 export type Room = {

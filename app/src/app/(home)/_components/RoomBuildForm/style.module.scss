@@ -1,0 +1,60 @@
+.roomBuildForm {
+  padding: 24px;
+  border: 1px solid gray;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    button {
+      height: 52px;
+    }
+  }
+  &.disable .content {
+    opacity: 0.5;
+    cursor: not-allowed;
+    input,
+    button {
+      pointer-events: none;
+    }
+  }
+
+  .authOverlay {
+    display: none;
+  }
+  &.disable .authOverlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 20px;
+    background: #000000aa;
+  }
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  label {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  input {
+    width: 360px;
+    height: 52px;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+}

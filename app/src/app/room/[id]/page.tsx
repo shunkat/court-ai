@@ -12,19 +12,16 @@ type Props = {
 };
 
 export default async function RoomPage(props: Props) {
-  const initialMessages = await AdminFirestore.collection("chats")
-    .withConverter(getAdminConverter<Chat>())
-    .where("roomUserId", "==", "dummy")
-    .orderBy("createdAt")
-    .limitToLast(30)
-    .get()
-    .then((snapshot) => snapshot.docs.map((doc) => doc.data()));
+  // const initialMessages = await AdminFirestore.collection("chats")
+  //   .withConverter(getAdminConverter<Chat>())
+  //   .where("roomUserId", "==")
+  //   .orderBy("createdAt")
+  //   .limitToLast(30)
+  //   .get()
+  //   .then((snapshot) => snapshot.docs.map((doc) => doc.data()));
 
   return (
-    <ChatRoomProvider
-      roomId={props.params.id}
-      initialMessages={initialMessages}
-    >
+    <ChatRoomProvider roomId={props.params.id} initialMessages={[]}>
       <div className={style.roomPage}>
         <ChatRoom />
       </div>

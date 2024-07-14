@@ -1,10 +1,14 @@
 "use client";
+import { useAuth } from "@/app/_components/firebase/AuthProvider";
 import { getClientConverter } from "@/app/resources/types/ClientFirestore";
-import { Chat } from "@/app/resources/types/Firestore";
+import { Chat, Room, RoomUser } from "@/app/resources/types/Firestore";
 import {
   Timestamp,
   addDoc,
   collection,
+  doc,
+  getDoc,
+  getDocs,
   getFirestore,
   limitToLast,
   onSnapshot,
@@ -16,6 +20,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 
 interface ChatRoomContextType {
   roomId: string;
+  room: Room;
+  roomUser: RoomUser;
   messages: Chat[];
   submit: (message: string) => void;
 }
@@ -38,13 +44,17 @@ export default function ChatRoomProvider(props: {
   initialMessages: Chat[];
   children: React.ReactNode;
 }) {
+  const { authUser } = useAuth();
   const [messages, setMessages] = useState<Chat[]>(props.initialMessages);
+  const [room, setRoom] = useState<Room>();
+  const [roomUser, setRoomUser] = useState<RoomUser>();
 
   useEffect(() => {
+    if (!roomUser) return;
     const _query = query(
       collection(getFirestore(), "chats"),
-      where("roomUserId", "==", "dummy"),
-      where("createdAt", ">", Timestamp.now()),
+      where("roomUserId", "==", roomUser.id),
+      // where("createdAt", ">", Timestamp.now()),
       orderBy("createdAt")
     );
     const unsubscribe = onSnapshot(_query, (snapshot) => {
@@ -58,7 +68,29 @@ export default function ChatRoomProvider(props: {
     return () => {
       unsubscribe();
     };
+  }, [roomUser]);
+
+  useEffect(() => {
+    getDoc(
+      doc(getFirestore(), "rooms", props.roomId).withConverter(
+        getClientConverter<Room>()
+      )
+    ).then((snapshot) => {
+      setRoom(snapshot.data() as Room);
+    });
   }, []);
+
+  useEffect(() => {
+    if (!authUser) return;
+    const _query = query(
+      collection(getFirestore(), "room_users"),
+      where("roomId", "==", props.roomId),
+      where("userId", "==", authUser?.uid)
+    ).withConverter(getClientConverter<RoomUser>());
+    getDocs(_query).then((snapshot) => {
+      setRoomUser(snapshot.docs[0].data() as RoomUser);
+    });
+  }, [props.roomId, authUser]);
 
   const submit = async (message: string) => {
     await addDoc(
@@ -66,7 +98,7 @@ export default function ChatRoomProvider(props: {
         getClientConverter<Chat>()
       ),
       {
-        roomUserId: "dummy",
+        roomUserId: roomUser?.id,
         roomId: props.roomId,
         role: "user",
         content: [
@@ -80,11 +112,19 @@ export default function ChatRoomProvider(props: {
     );
   };
 
-  return (
+  return authUser && room && roomUser ? (
     <ChatRoomContext.Provider
-      value={{ roomId: props.roomId, messages, submit }}
+      value={{
+        messages,
+        submit,
+        roomId: props.roomId,
+        room: room,
+        roomUser: roomUser,
+      }}
     >
       {props.children}
     </ChatRoomContext.Provider>
+  ) : (
+    <></>
   );
 }

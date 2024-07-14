@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import FirebaseInitialize from "@/app/components/firebase/FirebaseInitialize";
-import AuthProvider from "@/app/components/firebase/AuthProvider";
+import FirebaseInitialize from "@/app/_components/firebase/FirebaseInitialize";
+import AuthProvider from "@/app/_components/firebase/AuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
