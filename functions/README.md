@@ -8,6 +8,5 @@ $ genkit start
 ## Deploy
 
 ```zsh
-// root
 $ firebase deploy --only functions
 ```
