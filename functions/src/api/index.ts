@@ -1,21 +1,14 @@
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
-import { ChannelSchema, chatSchema } from '../firestore/schema';
-import { getChannel } from '../firestore/channel';
-import { addChat } from '../firestore/chat';
+import { chatSchema } from '../firestore/schema';
+import { getRoom } from '../firestore/room';
+import { addChat, getChatsLast } from '../firestore/chat';
 import { lawyerSuggestionFlow } from '../models/lawyer';
 import { Flow, runFlow } from '@genkit-ai/flow';
 import { ZodString, ZodTypeAny } from 'zod';
-import { inputSchema } from '../models/lawyer/schema';
-import { QueryDocumentSnapshot } from 'firebase-admin/firestore';
-
-const workflows = {
-  general: lawyerSuggestionFlow,
-  lawyer: lawyerSuggestionFlow,
-  japanese: lawyerSuggestionFlow,
-} satisfies Record<NonNullable<ChannelSchema['category'] | 'general'>, Flow<typeof inputSchema, ZodString, ZodTypeAny>>;
+import { inputSchema, LawyerCategorySchema } from '../models/lawyer/schema';
 
 export const onChatDocumentCreated = onDocumentCreated(
-  'channels/{channelId}/chats/{chatId}',
+  'chats/{chatId}',
   async (event) => {
     const snapshot = event.data;
     if (!snapshot) return;
@@ -30,34 +23,37 @@ export const onChatDocumentCreated = onDocumentCreated(
     // Process only user messages
     if (chat.data.role !== 'user') return;
 
-    const channel = await getChannel(event.params.channelId);
-    const history = await getChatHistories(snapshot);
+    const room = await getRoom(chat.data.roomId);
+    const history = await getChatsLast(chat.data.roomUserId, 5);
 
-    const message = await runFlow(workflows[channel?.category ?? 'general'], {
-      prompt: chat.data.message,
+    const message = await runFlow(workflows[room?.category ?? 'general'], {
+      prompt: chat.data.content.reduce((acc, cur) => acc + cur.text, ''),
       history,
     });
 
-    await addChat(event.params.channelId, {
+    await addChat({
+      roomId: chat.data.roomId,
+      roomUserId: chat.data.roomUserId,
       role: 'model',
-      message,
+      content: [{ text: message }],
     });
 
     return;
   },
 );
 
-const getChatHistories = async (snapshot: QueryDocumentSnapshot) => {
-  const chatSnapshots = await snapshot.ref.parent.orderBy('timestamp', 'desc').limit(5).get();
-  const chats = chatSnapshots.docs.map((doc) => {
-    const chat = chatSchema.safeParse(doc.data());
-    if (chat.success) return chat.data;
-    else {
-      console.error('Invalid chat data:', chat.error.errors);
-      return;
-    }
-  }).filter((c) => !!c)
-    .reverse();
-
-  return chats;
-};
+const workflows = {
+  'general': lawyerSuggestionFlow('general'),
+  'bankruptcy': lawyerSuggestionFlow('bankruptcy'),
+  'business': lawyerSuggestionFlow('business'),
+  'consumer': lawyerSuggestionFlow('consumer'),
+  'contract': lawyerSuggestionFlow('contract'),
+  'defamation': lawyerSuggestionFlow('defamation'),
+  'employment': lawyerSuggestionFlow('employment'),
+  'estate-and-probate': lawyerSuggestionFlow('estate-and-probate'),
+  'family': lawyerSuggestionFlow('family'),
+  'intellectual-property': lawyerSuggestionFlow('intellectual-property'),
+  'japanese': lawyerSuggestionFlow('japanese'),
+  'medical-malpractice': lawyerSuggestionFlow('medical-malpractice'),
+  'real-estate': lawyerSuggestionFlow('real-estate'),
+} satisfies Record<NonNullable<LawyerCategorySchema>, Flow<typeof inputSchema, ZodString, ZodTypeAny>>;
