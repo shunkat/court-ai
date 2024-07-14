@@ -7,9 +7,9 @@ import { inputSchema, LawyerCategorySchema } from './schema';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-export const lawyerSuggestionFlow = (category: LawyerCategorySchema) => defineFlow(
+const lawyerSuggestionFlow = (category: LawyerCategorySchema, name: string) => defineFlow(
   {
-    name: 'lawyerSuggestionFlow',
+    name,
     inputSchema: inputSchema,
     outputSchema: z.string(),
   },
@@ -34,4 +34,20 @@ const getSystemPrompt = (category: LawyerCategorySchema) => {
   const filePath = resolve(__dirname, `./prompts/${category}.md`);
   const promptContent = readFileSync(filePath, 'utf-8');
   return promptContent;
+};
+
+export const llmFlows = {
+  'general': lawyerSuggestionFlow('general', 'generalLawyerSuggestionFlow'),
+  'bankruptcy': lawyerSuggestionFlow('bankruptcy', 'bankruptcyLawyerSuggestionFlow'),
+  'business': lawyerSuggestionFlow('business', 'businessLawyerSuggestionFlow'),
+  'consumer': lawyerSuggestionFlow('consumer', 'consumerLawyerSuggestionFlow'),
+  'contract': lawyerSuggestionFlow('contract', 'contractLawyerSuggestionFlow'),
+  'defamation': lawyerSuggestionFlow('defamation', 'defamationLawyerSuggestionFlow'),
+  'employment': lawyerSuggestionFlow('employment', 'employmentLawyerSuggestionFlow'),
+  'estate-and-probate': lawyerSuggestionFlow('estate-and-probate', 'estateAndProbateLawyerSuggestionFlow'),
+  'family': lawyerSuggestionFlow('family', 'familyLawyerSuggestionFlow'),
+  'intellectual-property': lawyerSuggestionFlow('intellectual-property', 'intellectualPropertyLawyerSuggestionFlow'),
+  'japanese': lawyerSuggestionFlow('japanese', 'japaneseLawyerSuggestionFlow'),
+  'medical-malpractice': lawyerSuggestionFlow('medical-malpractice', 'medicalMalpracticeLawyerSuggestionFlow'),
+  'real-estate': lawyerSuggestionFlow('real-estate', 'realEstateLawyerSuggestionFlow'),
 };

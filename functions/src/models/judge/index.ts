@@ -10,11 +10,6 @@ export const judgeSuggestionFlow = defineFlow(
     name: 'judgeSuggestionFlow',
     inputSchema: z.string(),
     outputSchema: z.string(),
-    // authPolicy: firebaseAuth((user) => {
-    //   if (!user.email_verified) {
-    //     throw new Error('Verified email required to run flow');
-    //   }
-    // }),
   },
   async (prompt) => {
     const history: MessageData[] = [
