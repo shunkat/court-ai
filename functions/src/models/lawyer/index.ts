@@ -4,6 +4,7 @@ import { geminiPro } from '@genkit-ai/googleai';
 import { z } from 'zod';
 import { defineFlow } from '@genkit-ai/flow';
 import { inputSchema, LawyerCategorySchema } from './schema';
+import path from 'path';
 
 const lawyerSuggestionFlow = (category: LawyerCategorySchema, name: string) => defineFlow(
   {
@@ -29,7 +30,8 @@ const lawyerSuggestionFlow = (category: LawyerCategorySchema, name: string) => d
 );
 
 const getSystemPrompt = async (category: LawyerCategorySchema) => {
-  return await import(`./prompts/${category}.ts`).then((module) => module.prompt);
+  const filePath = path.resolve(__dirname, `./prompts/${category}`);
+  return await import(filePath).then((module) => module.prompt);
 };
 
 export const llmFlows = {
