@@ -10,3 +10,6 @@ $ genkit start
 ```zsh
 $ firebase deploy --only functions
 ```
+
+## Document
+[See ./docs](./docs/)
