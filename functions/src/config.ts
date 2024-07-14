@@ -12,7 +12,6 @@ setGlobalOptions({ region: 'us-west2', secrets: [googleGenaiApiKey] });
 initializeApp();
 export const db = getFirestore();
 
-
 configureGenkit({
   plugins: [firebase(), googleAI()],
   logLevel: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
