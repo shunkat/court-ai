@@ -1,46 +1,42 @@
 "use client";
-import { use, useState } from "react";
+import { useState } from "react";
 import style from "./style.module.scss";
 import MessageBlock from "../MessageBlock";
+import { useChatRoom } from "../ChatRoomProvider";
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
-
-export default function ChatRoom(props: Props) {
-  const { messages, submit } = useChat();
-
-  const [message, setMessage] = useState("");
+export default function ChatRoom() {
+  const [input, setInput] = useState("");
+  const { messages, submit } = useChatRoom();
 
   return (
     <div className={style.chatRoom}>
       <div className={style.messages}>
-        {messages.map((message, index) => (
-          <div key={index} className={style.message}>
-            <MessageBlock
-              isOwn={index % 2 === 0}
-              user={{
-                name: "User",
-                thumbnailSrc: "https://picsum.photos/200",
-              }}
-            >
-              {message}
-            </MessageBlock>
-          </div>
-        ))}
+        {messages.map((message, mIndex) =>
+          message.content.map((content, cIndex) => (
+            <div key={`${mIndex}_${cIndex}`} className={style.message}>
+              <MessageBlock
+                isOwn={mIndex % 2 === 0}
+                user={{
+                  name: "User",
+                  thumbnailSrc: "https://picsum.photos/200",
+                }}
+              >
+                {content.text}
+              </MessageBlock>
+            </div>
+          ))
+        )}
       </div>
       <div className={style.form}>
         <input
           type="text"
-          value={message}
-          onChange={(e) => setMessage(e.currentTarget.value)}
+          value={input}
+          onChange={(e) => setInput(e.currentTarget.value)}
         />
         <button
           onClick={() => {
-            submit(message);
-            setMessage("");
+            submit(input);
+            setInput("");
           }}
         >
           Submit
@@ -48,16 +44,4 @@ export default function ChatRoom(props: Props) {
       </div>
     </div>
   );
-}
-
-function useChat(): { messages: string[]; submit: (message: string) => void } {
-  const [messages, setMessages] = useState<string[]>([]);
-  const submit = (message: string) => {
-    setMessages((prev) => [...prev, message]);
-  };
-
-  return {
-    messages,
-    submit,
-  };
 }
