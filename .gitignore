@@ -46,3 +46,5 @@ test-timings.json
 *.tsbuildinfo
 .swc/
 .turbo
+
+.firebase/

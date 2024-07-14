@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/_components/firebase/AuthProvider";
+import GoogleLoginButton from "../GoogleLoginButton";
 
 export default function RoomBuildForm() {
   const router = useRouter();
@@ -18,32 +19,40 @@ export default function RoomBuildForm() {
   const [userName, setUserName] = useState("");
 
   return (
-    <div className={style.roomBuildForm}>
-      <div className={style.item}>
-        <label>Room Name</label>
-        <input
-          type="text"
-          value={roomName}
-          onChange={(e) => setRoomName(e.currentTarget.value)}
-        />
+    <div className={`${style.roomBuildForm} ${authUser ? "" : style.disable}`}>
+      <div className={`${style.content}`}>
+        <div className={style.item}>
+          <label>Room Name</label>
+          <input
+            type="text"
+            value={roomName}
+            onChange={(e) => setRoomName(e.currentTarget.value)}
+          />
+        </div>
+        <div className={style.item}>
+          <label>Nick Name</label>
+          <input
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.currentTarget.value)}
+          />
+        </div>
+        <button
+          onClick={async () => {
+            submit(roomName, authUser?.uid ?? "", userName).then((roomId) => {
+              router.push(`/room/${roomId}`);
+            });
+          }}
+        >
+          Submit
+        </button>
       </div>
-      <div className={style.item}>
-        <label>Nick Name</label>
-        <input
-          type="text"
-          value={userName}
-          onChange={(e) => setUserName(e.currentTarget.value)}
-        />
+      <div className={style.authOverlay}>
+        Please Sign In Before Use
+        <div className={style.loginButton}>
+          <GoogleLoginButton />
+        </div>
       </div>
-      <button
-        onClick={async () => {
-          submit(roomName, authUser?.uid ?? "", userName).then((roomId) => {
-            router.push(`/room/${roomId}`);
-          });
-        }}
-      >
-        Submit
-      </button>
     </div>
   );
 }

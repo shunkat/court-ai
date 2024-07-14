@@ -14,14 +14,17 @@ import {
   GoogleAuthProvider,
   getAuth,
   onAuthStateChanged,
-  signInAnonymously,
-  signInWithCredential,
   signInWithPopup,
   signOut,
 } from "firebase/auth";
 import { User } from "@/app/resources/types/Firestore";
-import { doc, getFirestore } from "firebase/firestore/lite";
-import { getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  getDoc,
+  getFirestore,
+  doc,
+  serverTimestamp,
+  setDoc,
+} from "firebase/firestore";
 import { getClientConverter } from "@/app/resources/types/ClientFirestore";
 
 interface AuthContextType {
@@ -47,9 +50,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   const firestore = useMemo(() => getFirestore(), []);
 
   useEffect(() => {
-    // onAuthStateChangedでログインの状態を監視する
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      // ユーザー情報をcurrentUserに格納する
       setAuthUser(user ?? undefined);
       if (user) {
         // ユーザー情報を取得する
@@ -57,16 +58,7 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
           doc(firestore, "users", user.uid).withConverter(
             getClientConverter<User>()
           )
-        ).then((_doc) => {
-          // if (_doc.exists()) {
-          //   const data = _doc.data() as User;
-          // } else {
-          //   setDoc(doc(firestore, "users", user.uid), {
-          //     createdAt: serverTimestamp(),
-          //     updatedAt: serverTimestamp(),
-          //   });
-          // }
-        });
+        ).then((_doc) => {});
       } else {
       }
     });
