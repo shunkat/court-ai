@@ -1,7 +1,33 @@
 import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/v2/firestore';
-import { chatSchema, roomJudgeSchema, RoomJudgeSchema, roomSchema, RoomSchema } from '../firestore/schema';
+import { chatSchema, roomJudgeSchema, RoomJudgeSchema, roomSchema, RoomSchema, RoomUserSchema, roomUserSchema } from '../firestore/schema';
 import { chatWithLawyer } from '../usecase/chat-with-lawyer';
 import { battleCourt } from '../usecase/battle-court';
+import { finishAllClaims as finishAllClaims } from '../usecase/finish-claim';
+
+// has finished claims ?
+export const onRoomUserDocumentUpdated = onDocumentUpdated(
+  'roomUsers/{roomUserId}',
+  async (event) => {
+    const snapshot = event.data;
+    if (!snapshot) return;
+
+    const before = roomUserSchema.safeParse(snapshot.before.data());
+    const after = roomUserSchema.safeParse(snapshot.after.data());
+    if (!before.success || !after.success) {
+      console.error('Invalid room user data:', before.error?.errors, after.error?.errors);
+      return;
+    }
+
+    if (!validateFinishClaims(before.data, after.data)) return;
+
+    await finishAllClaims(after.data);
+    return;
+  }
+);
+const validateFinishClaims = (before: RoomUserSchema, after: RoomUserSchema): boolean => {
+  return (before.claimStatus !== after.claimStatus && after.claimStatus === 'finished');
+};
+
 
 // Batch battles lawyers and a judge
 export const onRoomDocumentUpdated = onDocumentUpdated(
