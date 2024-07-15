@@ -15,7 +15,7 @@ const roomCreatedSchema = z.object({
 
 export const roomJudgeSchema = z.object({
   name: z.string(),
-  category: lawyerCategorySchema.optional(),
+  category: lawyerCategorySchema,
   status: z.literal('judge'),
   judgeCount: z.number().int().min(0),
   creatorId: z.string(), // RoomUser
@@ -64,6 +64,7 @@ export type ChatSchema = z.infer<typeof chatSchema>;
 export const roomUserSchema = z.object({
   name: z.string(),
   userId: z.string(),
+  claimStatus: z.union([z.literal('shortage'), z.literal('sufficient'), z.literal('finished')]),
   createdAt: firestoreTimestampSchema,
 });
 export type RoomUserSchema = z.infer<typeof roomUserSchema>;
