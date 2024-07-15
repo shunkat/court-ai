@@ -10,7 +10,7 @@ const roomCreatedSchema = z.object({
   creatorId: z.string(), // RoomUser
   oppositeId: z.string().optional(), // RoomUser
   createdAt: firestoreTimestampSchema,
-  updatedAt: firestoreTimestampSchema.optional(),
+  updatedAt: firestoreTimestampLooseSchema.optional(),
 });
 
 export const roomJudgeSchema = z.object({
@@ -21,7 +21,7 @@ export const roomJudgeSchema = z.object({
   creatorId: z.string(), // RoomUser
   oppositeId: z.string(), // RoomUser
   createdAt: firestoreTimestampSchema,
-  updatedAt: firestoreTimestampSchema,
+  updatedAt: firestoreTimestampLooseSchema,
 });
 export type RoomJudgeSchema = z.infer<typeof roomJudgeSchema>;
 
@@ -33,7 +33,7 @@ const roomCompletedSchema = z.object({
   creatorId: z.string(), // RoomUser
   oppositeId: z.string(), // RoomUser
   createdAt: firestoreTimestampSchema,
-  updatedAt: firestoreTimestampSchema,
+  updatedAt: firestoreTimestampLooseSchema,
 });
 
 export const roomSchema = z.discriminatedUnion('status', [
@@ -63,6 +63,7 @@ export type ChatSchema = z.infer<typeof chatSchema>;
 
 export const roomUserSchema = z.object({
   name: z.string(),
+  roomId: z.string(),
   userId: z.string(),
   claimStatus: z.union([z.literal('shortage'), z.literal('sufficient'), z.literal('finished')]),
   createdAt: firestoreTimestampSchema,
