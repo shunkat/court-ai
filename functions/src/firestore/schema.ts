@@ -2,15 +2,46 @@ import { z } from 'zod';
 import { firestoreTimestampLooseSchema, firestoreTimestampSchema } from './util';
 import { lawyerCategorySchema } from '../models/lawyer/schema';
 
-export const roomSchema = z.object({
+const roomCreatedSchema = z.object({
   name: z.string(),
   category: lawyerCategorySchema.optional(),
-  status: z.union([z.literal('created'), z.literal('judge'), z.literal('completed')]),
+  status: z.literal('created'),
   judgeCount: z.number().int().min(0),
   creatorId: z.string(), // RoomUser
   oppositeId: z.string().optional(), // RoomUser
   createdAt: firestoreTimestampSchema,
+  updatedAt: firestoreTimestampSchema.optional(),
 });
+
+export const roomJudgeSchema = z.object({
+  name: z.string(),
+  category: lawyerCategorySchema.optional(),
+  status: z.literal('judge'),
+  judgeCount: z.number().int().min(0),
+  creatorId: z.string(), // RoomUser
+  oppositeId: z.string(), // RoomUser
+  createdAt: firestoreTimestampSchema,
+  updatedAt: firestoreTimestampSchema,
+});
+export type RoomJudgeSchema = z.infer<typeof roomJudgeSchema>;
+
+const roomCompletedSchema = z.object({
+  name: z.string(),
+  category: lawyerCategorySchema,
+  status: z.literal('completed'),
+  judgeCount: z.number().int().min(0),
+  creatorId: z.string(), // RoomUser
+  oppositeId: z.string(), // RoomUser
+  createdAt: firestoreTimestampSchema,
+  updatedAt: firestoreTimestampSchema,
+});
+
+export const roomSchema = z.discriminatedUnion('status', [
+  roomCreatedSchema,
+  roomJudgeSchema,
+  roomCompletedSchema,
+]);
+
 export type RoomSchema = z.infer<typeof roomSchema>;
 
 export const chatSchema = z.object({
@@ -29,3 +60,18 @@ export const chatSchema = z.object({
 });
 
 export type ChatSchema = z.infer<typeof chatSchema>;
+
+export const battleSchema = z.object({
+  roomId: z.string(),
+  judgeCount: z.number().int().min(0),
+  contents: z.array(z.object({
+    text: z.string(),
+    role: z.union([
+      z.literal('judge'),
+      z.literal('plaintiff'), // 原告
+      z.literal('defendant'), // 被告
+    ]),
+  })),
+  createdAt: firestoreTimestampLooseSchema,
+});
+export type BattleSchema = z.infer<typeof battleSchema>;
