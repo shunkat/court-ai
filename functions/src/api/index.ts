@@ -1,10 +1,7 @@
 import { onDocumentCreated, onDocumentUpdated } from 'firebase-functions/v2/firestore';
-import { chatSchema, RoomSchema, roomSchema } from '../firestore/schema';
-import { getRoom } from '../firestore/room';
-import { addChat, getChatsFromRoom, getChatsFromUser } from '../firestore/chat';
-import { llmFlows } from '../models/lawyer';
-import { runFlow } from '@genkit-ai/flow';
-import { judgeSuggestionFlow } from '../models/judge';
+import { chatSchema, roomJudgeSchema, RoomJudgeSchema, roomSchema, RoomSchema } from '../firestore/schema';
+import { chatWithLawyer } from '../usecase/chat-with-lawyer';
+import { battleCourt } from '../usecase/battle-court';
 
 // Batch battles lawyers and a judge
 export const onRoomDocumentUpdated = onDocumentUpdated(
@@ -20,39 +17,22 @@ export const onRoomDocumentUpdated = onDocumentUpdated(
       return;
     }
 
-    if (!canStartBattle(before.data, after.data)) return;
+    if (!validateStartBattleRoom(before.data, after.data)) return;
 
-    const roomId = event.params.roomId;
-    const room = after.data;
-    const chats = await getChatsFromRoom(roomId);
-
-    await addChat({
-      roomId: roomId,
-      roomUserId: 'admin',
-      role: 'system',
-      content: [{ type: 'text', text: '裁判を開始します。' }],
-    });
-
-    // 原告の主張を取得
-    const plaintiffClaim = await getPlaintiffClaim(roomId);
-    // 被告の主張を取得
-    const defendantClaim = await getDefendantClaim(roomId);
-
-    // 裁判官AIに判定を依頼
-    const judgeResponse = await runFlow(judgeSuggestionFlow, `${plaintiffClaim} ${defendantClaim}`);
-
-    // 判定結果をチャットに追加
-    await addChat({
-      roomId: roomId,
-      roomUserId: 'admin',
-      role: 'system',
-      content: [{ type: 'text', text: judgeResponse }],
-    });
+    await battleCourt(after.data, event.params.roomId);
+    return;
   }
 );
 
-const canStartBattle = (before: RoomSchema, after: RoomSchema) :boolean => {
-  return before.status !== after.status && after.status === 'judge';
+const validateStartBattleRoom = (before: RoomSchema, after: RoomSchema): after is RoomJudgeSchema => {
+  if (!(before.status !== after.status && after.status === 'judge')) return false;
+
+  const room = roomJudgeSchema.safeParse(after);
+  if (!room.success) {
+    console.error('Invalid room data:', room.error.errors);
+    return false;
+  }
+  return true;
 };
 
 // chat with LLM
@@ -68,25 +48,7 @@ export const onChatDocumentCreated = onDocumentCreated(
       return;
     }
 
-    // ! Caution: infinite loop
-    // Process only user messages
-    if (chat.data.role !== 'user') return;
-
-    const room = await getRoom(chat.data.roomId);
-    const history = await getChatsFromUser(chat.data.roomUserId, 5);
-
-    const message = await runFlow(llmFlows[room?.category ?? 'general'], {
-      prompt: chat.data.content.reduce((acc, cur) => acc + cur.text, ''),
-      history,
-    });
-
-    await addChat({
-      roomId: chat.data.roomId,
-      roomUserId: chat.data.roomUserId,
-      role: 'model',
-      content: [{ text: message }],
-    });
-
+    await chatWithLawyer(chat.data);
     return;
   },
 );
