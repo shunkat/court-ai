@@ -61,6 +61,13 @@ export const chatSchema = z.object({
 
 export type ChatSchema = z.infer<typeof chatSchema>;
 
+export const roomUserSchema = z.object({
+  name: z.string(),
+  userId: z.string(),
+  createdAt: firestoreTimestampSchema,
+});
+export type RoomUserSchema = z.infer<typeof roomUserSchema>;
+
 export const battleSchema = z.object({
   roomId: z.string(),
   judgeCount: z.number().int().min(0),
