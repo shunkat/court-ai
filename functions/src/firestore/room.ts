@@ -1,3 +1,4 @@
+import { FieldValue } from 'firebase-admin/firestore';
 import { db } from '../config';
 import { RoomSchema, roomSchema } from './schema';
 
@@ -9,4 +10,8 @@ export const getRoom = async (roomId: string): Promise<RoomSchema | undefined> =
     return undefined;
   }
   return parsed.data;
+};
+
+export const updateRoom = async (roomId: string, room: RoomSchema): Promise<void> => {
+  await db.doc(`rooms/${roomId}`).update({ ...room, updateAt: FieldValue.serverTimestamp() });
 };
