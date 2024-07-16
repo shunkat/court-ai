@@ -8,7 +8,7 @@ $ genkit start
 ## Deploy
 
 ```zsh
-$ firebase deploy --only functions
+$ npm run deploy
 ```
 
 ## Document
