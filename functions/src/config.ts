@@ -7,7 +7,12 @@ import { firebase } from '@genkit-ai/firebase';
 import googleAI from '@genkit-ai/googleai';
 
 const googleGenaiApiKey = defineSecret('GOOGLE_GENAI_API_KEY');
-setGlobalOptions({ region: 'us-west2', secrets: [googleGenaiApiKey], timeoutSeconds: 540 });
+setGlobalOptions({
+  region: 'us-west2',
+  secrets: [googleGenaiApiKey],
+  timeoutSeconds: 540,
+  maxInstances: 5,
+});
 
 initializeApp();
 export const db = getFirestore();
