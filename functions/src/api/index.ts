@@ -28,7 +28,6 @@ const validateFinishClaims = (before: RoomUserSchema, after: RoomUserSchema): bo
   return (before.claimStatus !== after.claimStatus && after.claimStatus === 'finished');
 };
 
-
 // Batch battles lawyers and a judge
 export const onRoomDocumentUpdated = onDocumentUpdated(
   'rooms/{roomId}',
