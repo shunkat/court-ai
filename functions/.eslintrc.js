@@ -35,5 +35,6 @@ module.exports = {
       'varsIgnorePattern': '^_',
       'caughtErrorsIgnorePattern': '^_',
       'destructuredArrayIgnorePattern': '^_' }],
+    '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
   },
 };
