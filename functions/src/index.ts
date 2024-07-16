@@ -1,2 +1,2 @@
 import './config';
-export { onChatDocumentCreated, onRoomDocumentUpdated } from './api';
+export * from './api';
