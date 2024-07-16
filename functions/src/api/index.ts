@@ -6,7 +6,7 @@ import { finishAllClaims as finishAllClaims } from '../usecase/finish-claim';
 
 // has finished claims ?
 export const onRoomUserDocumentUpdated = onDocumentUpdated(
-  'roomUsers/{roomUserId}',
+  'room_users/{roomUserId}',
   async (event) => {
     const snapshot = event.data;
     if (!snapshot) return;
