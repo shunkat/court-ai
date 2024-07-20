@@ -3,6 +3,7 @@
     "firestore",
     "Genai",
     "genkit",
+    "googleai",
     "usecase"
   ]
 }
