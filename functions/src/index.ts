@@ -1,2 +1,2 @@
 import './config';
-export * from './api';
+export * from './handlers';
