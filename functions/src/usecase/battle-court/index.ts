@@ -67,14 +67,15 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
     text: await Judge.finalJudgment(battleContentsPrompt),
   });
 
-  sendEmail({ roomId, title: room.name, plaintiffId: room.creatorId, defendantId: room.oppositeId });
-
-  await addBattle({
-    roomId: roomId,
-    judgeCount: room.judgeCount,
-    contents: battleContents,
-  });
-  await updateRoom(roomId, { ...room, status: 'completed' });
+  await Promise.all([
+    sendEmail({ roomId, title: room.name, plaintiffId: room.creatorId, defendantId: room.oppositeId }),
+    addBattle({
+      roomId: roomId,
+      judgeCount: room.judgeCount,
+      contents: battleContents,
+    }),
+    updateRoom(roomId, { ...room, status: 'completed' }),
+  ]);
   return;
 };
 
