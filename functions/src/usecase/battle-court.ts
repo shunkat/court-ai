@@ -41,7 +41,7 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
   });
 
   // discussion
-  Array.from({ length: 2 }).forEach(async (_) => {
+  await Promise.all(Array.from({ length: 1 }).map(async (_) => {
     updateBattleOnMemory({
       role: 'judge',
       text: await Judge.encourageLawyer('plaintiff', battleContentsPrompt),
@@ -58,14 +58,13 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
       role: 'defendant',
       text: await Lawyer.provideEvidence({ role: 'defendant', category: room.category, claimsPrompt: defendantClaimsText, conversationsPrompt: battleContentsPrompt }),
     });
-  });
+  }));
 
   updateBattleOnMemory({
     role: 'judge',
     text: await Judge.finalJudgment(battleContentsPrompt),
   });
 
-  // 判定結果をチャットに追加
   await addBattle({
     roomId: roomId,
     judgeCount: room.judgeCount,
