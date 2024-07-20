@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "jsx": "react",
     "module": "commonjs",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -12,5 +13,5 @@
     "esModuleInterop": true
   },
   "compileOnSave": true,
-  "include": ["src"]
+  "include": ["src", "emails"]
 }
