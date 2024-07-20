@@ -1,12 +1,12 @@
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 import { z } from 'zod';
 
-// read
+/** read */
 export const firestoreTimestampSchema = z.instanceof(Timestamp);
-// write
+/** write */
 export const firestoreFieldValueSchema = z.custom((data) => data instanceof FieldValue);
 
-// read and write
+/** read and write */
 export const firestoreTimestampLooseSchema = z.union([
   firestoreFieldValueSchema,
   firestoreTimestampSchema,

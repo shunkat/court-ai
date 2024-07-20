@@ -1,4 +1,5 @@
 ## Dev
+node@20
 
 ```zsh
 $ export GOOGLE_GENAI_API_KEY=YOUR_API_KEY
@@ -8,5 +9,8 @@ $ genkit start
 ## Deploy
 
 ```zsh
-$ firebase deploy --only functions
+$ npm run deploy
 ```
+
+## Document
+[See ./docs](./docs/)
