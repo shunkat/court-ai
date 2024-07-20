@@ -1,8 +1,10 @@
-import { getChatsFromRoomUser } from '../firestore/chat';
-import { BattleSchema, ChatSchema, RoomJudgeSchema } from '../firestore/schema';
-import { addBattle } from '../firestore/battle';
-import * as Judge from '../models/judge/actions';
-import * as Lawyer from '../models/lawyer/actions';
+import { getChatsFromRoomUser } from '../../firestore/chat';
+import { BattleSchema, ChatSchema, RoomJudgeSchema } from '../../firestore/schema';
+import { addBattle } from '../../firestore/battle';
+import * as Judge from '../../models/judge/actions';
+import * as Lawyer from '../../models/lawyer/actions';
+import { sendEmail } from './send-email';
+import { updateRoom } from '../../firestore/room';
 
 export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
   const plaintiffClaims = await getChatsFromRoomUser(room.creatorId);
@@ -65,11 +67,14 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
     text: await Judge.finalJudgment(battleContentsPrompt),
   });
 
+  sendEmail({ roomId, title: room.name, plaintiffId: room.creatorId, defendantId: room.oppositeId });
+
   await addBattle({
     roomId: roomId,
     judgeCount: room.judgeCount,
     contents: battleContents,
   });
+  await updateRoom(roomId, { ...room, status: 'completed' });
   return;
 };
 
