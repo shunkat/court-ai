@@ -12,6 +12,6 @@ export const getRoom = async (roomId: string): Promise<RoomSchema | undefined> =
   return parsed.data;
 };
 
-export const updateRoom = async (roomId: string, room: RoomSchema): Promise<void> => {
+export const updateRoom = async (roomId: string, room: RoomSchema) => {
   await db.doc(`rooms/${roomId}`).update({ ...room, updatedAt: FieldValue.serverTimestamp() });
 };

@@ -6,8 +6,6 @@ import { CourtFinishedEmail } from './email';
 import { getAuth } from 'firebase-admin/auth';
 import { getRoomUser } from '../../firestore/room-user';
 
-const resend = new Resend(resendApiKey.value());
-
 type Props = {
   roomId: string
   title: string
@@ -16,9 +14,13 @@ type Props = {
 }
 
 export const sendEmail = async ({ roomId, title, plaintiffId, defendantId }: Props) => {
+  const resend = new Resend(resendApiKey.value());
   return Promise.all([plaintiffId, defendantId].map(async (roomUserId) => {
     const user = await getRoomUser(roomUserId);
-    if (!user) return;
+    if (!user) {
+      console.error('User not found:', roomUserId);
+      return;
+    }
 
     const userInfo = await getAuth().getUser(user.userId).catch((err) => {
       console.error(err);
