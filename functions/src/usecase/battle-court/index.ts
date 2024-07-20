@@ -1,8 +1,10 @@
-import { getChatsFromRoomUser } from '../firestore/chat';
-import { BattleSchema, ChatSchema, RoomJudgeSchema } from '../firestore/schema';
-import { addBattle } from '../firestore/battle';
-import * as Judge from '../models/judge/actions';
-import * as Lawyer from '../models/lawyer/actions';
+import { getChatsFromRoomUser } from '../../firestore/chat';
+import { BattleSchema, ChatSchema, RoomJudgeSchema } from '../../firestore/schema';
+import { addBattle } from '../../firestore/battle';
+import * as Judge from '../../models/judge/actions';
+import * as Lawyer from '../../models/lawyer/actions';
+import { sendEmail } from './send-email';
+import { updateRoom } from '../../firestore/room';
 
 export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
   const plaintiffClaims = await getChatsFromRoomUser(room.creatorId);
@@ -65,11 +67,15 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
     text: await Judge.finalJudgment(battleContentsPrompt),
   });
 
-  await addBattle({
-    roomId: roomId,
-    judgeCount: room.judgeCount,
-    contents: battleContents,
-  });
+  await Promise.all([
+    sendEmail({ roomId, title: room.name, plaintiffId: room.creatorId, defendantId: room.oppositeId }),
+    addBattle({
+      roomId: roomId,
+      judgeCount: room.judgeCount,
+      contents: battleContents,
+    }),
+    updateRoom(roomId, { ...room, status: 'completed' }),
+  ]);
   return;
 };
 

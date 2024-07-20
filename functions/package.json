@@ -1,6 +1,7 @@
 {
   "name": "functions",
   "scripts": {
+    "dev-email": "email dev --port 3001",
     "lint": "eslint --ext .js,.ts .",
     "lint-fix": "eslint --ext .js,.ts . --fix",
     "build": "tsc",
@@ -22,9 +23,11 @@
     "@genkit-ai/firebase": "^0.5.4",
     "@genkit-ai/flow": "^0.5.4",
     "@genkit-ai/googleai": "^0.5.4",
+    "@react-email/components": "^0.0.21",
     "express": "^4.19.2",
-    "firebase-admin": "^12.1.0",
+    "firebase-admin": "^12.2.0",
     "firebase-functions": "^5.0.1",
+    "resend": "^3.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -34,6 +37,7 @@
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-import": "^2.25.4",
     "firebase-functions-test": "^3.1.0",
+    "react-email": "^2.1.5",
     "typescript": "^5.5.3"
   },
   "volta": {
