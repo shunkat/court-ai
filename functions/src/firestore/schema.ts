@@ -88,6 +88,7 @@ export type BattleSchema = z.infer<typeof battleSchema>;
 // 裁判結果のスキーマ
 export const judgmentResultSchema = z.object({
   roomId: z.string(),  // どの部屋の判決か
+  judgeCount: z.number().int().min(0),
   mainSentence: z.string(), // 裁判の主文
   judgeReasons: z.object({
     reasonTitle: z.string(),
