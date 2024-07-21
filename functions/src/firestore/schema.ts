@@ -95,10 +95,10 @@ export const judgmentResultSchema = z.object({
   }), // 判決理由 (複数)
   futureDevelopments: z.string(),     // 今後の展開
   homeworks: z.object({  // 宿題 (原告と被告それぞれ)
-    plaintiff: z.array(z.string()), 
-    defendant: z.array(z.string()),
+    plaintiff: z.array(z.string()), // 原告 
+    defendant: z.array(z.string()), // 被告
   }),
   createdAt: firestoreTimestampSchema,
   updatedAt: firestoreTimestampLooseSchema.optional(), 
 });
-export type JudgmentSchema = z.infer<typeof judgmentSchema>;
+export type JudgmentSchema = z.infer<typeof judgmentResultSchema>;
