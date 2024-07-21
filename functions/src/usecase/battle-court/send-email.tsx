@@ -1,8 +1,8 @@
 
 import { Resend } from 'resend';
-import { appUrl, resendApiKey } from '../../env';
+import { appUrl, resendApiKey, serviceEmail } from '../../env';
 import React from 'react';
-import { CourtFinishedEmail } from './email';
+import { CourtPreparationEmail } from './email';
 import { getAuth } from 'firebase-admin/auth';
 import { getRoomUser } from '../../firestore/room-user';
 
@@ -30,10 +30,10 @@ export const sendEmail = async ({ roomId, title, plaintiffId, defendantId }: Pro
     if (!userInfo?.email) return;
 
     const { error } = await resend.emails.send({
-      from: 'Themis <no-reply@resend.dev>',
+      from: `Themis <${serviceEmail}>`,
       to: userInfo.email,
-      subject: `🎉 Good News, ${user.name}! Your Court Has Been finished!`,
-      react: <CourtFinishedEmail name={user.name} title={title} url={`${appUrl}/${roomId}/battles`} />,
+      subject: `🚀 Your Court Case is Ready, "${title}"`,
+      react: <CourtPreparationEmail name={user.name} title={title} url={`${appUrl}/${roomId}/battles`} />,
     });
 
     if (error) {

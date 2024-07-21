@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import {
   Html,
   Head,
@@ -9,7 +9,7 @@ import {
   Link,
   Text,
 } from '@react-email/components';
-import { serviceEmail } from '../../env';
+import { serviceEmail } from '../src/env';
 
 type EmailProps = {
   name: string;
@@ -17,7 +17,7 @@ type EmailProps = {
   url: string;
 };
 
-export const CourtPreparationEmail = ({
+const CourtPreparationEmail = ({
   name,
   title,
   url,
@@ -75,6 +75,8 @@ export const CourtPreparationEmail = ({
     </Body>
   </Html>
 );
+
+export default CourtPreparationEmail;
 
 const main = {
   backgroundColor: '#f6f9fc',
