@@ -52,3 +52,18 @@ export type LawyerResponse = {
   content: TextMessage;
   role: "model";
 } & AppModel;
+
+export type JudgmentResult = {
+  roomId: string;
+  judgeCount: number;
+  mainSentence: string;
+  judgeReasons: {
+    reasonTitle: string;
+    reasonDetail: string[];
+  };
+  futureDevelopments: string;
+  homeworks: {
+    plaintiff: string[];
+    defendant: string[];
+  };
+} & AppModel;
