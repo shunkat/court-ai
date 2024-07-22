@@ -11,41 +11,79 @@ import {
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/_components/firebase/AuthProvider";
 import GoogleLoginButton from "../GoogleLoginButton";
+import CopyImage from "./copy.png";
+import Image from "next/image";
 
 export default function RoomBuildForm() {
   const router = useRouter();
   const { authUser } = useAuth();
   const [roomName, setRoomName] = useState("");
   const [userName, setUserName] = useState("");
+  const [roomId, setRoomId] = useState("");
+  const [isCopied, setIsCopied] = useState(false);
+  const sharedUrl = `${window.location.origin}/room/${roomId}/invite`;
 
   return (
     <div className={`${style.roomBuildForm} ${authUser ? "" : style.disable}`}>
       <div className={`${style.content}`}>
-        <div className={style.item}>
-          <label>Room Name</label>
-          <input
-            type="text"
-            value={roomName}
-            onChange={(e) => setRoomName(e.currentTarget.value)}
-          />
-        </div>
-        <div className={style.item}>
-          <label>Nick Name</label>
-          <input
-            type="text"
-            value={userName}
-            onChange={(e) => setUserName(e.currentTarget.value)}
-          />
-        </div>
-        <button
-          onClick={async () => {
-            submit(roomName, authUser?.uid ?? "", userName).then((roomId) => {
-              router.push(`/room/${roomId}`);
-            });
-          }}
-        >
-          Submit
-        </button>
+        {roomId ? (
+          <>
+            <div className={style.share}>
+              <label>Share the URL to Opposite.</label>
+              <div className={style.share_copy}>
+                <span className={style.share_copy_text}>{sharedUrl}</span>
+                <Image
+                  src={CopyImage}
+                  alt="Copy"
+                  onClick={() => {
+                    navigator.clipboard.writeText(sharedUrl);
+                    setIsCopied(true);
+                    window.alert("Copied!");
+                  }}
+                />
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                router.push(`/room/${roomId}`);
+              }}
+              disabled={!isCopied}
+            >
+              Go to Room
+            </button>
+          </>
+        ) : (
+          <>
+            <div className={style.item}>
+              <label>Room Name</label>
+              <input
+                type="text"
+                value={roomName}
+                onChange={(e) => setRoomName(e.currentTarget.value)}
+              />
+            </div>
+            <div className={style.item}>
+              <label>Nick Name</label>
+              <input
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.currentTarget.value)}
+              />
+            </div>
+            <button
+              onClick={async () => {
+                submit(roomName, authUser?.uid ?? "", userName).then(
+                  (roomId) => {
+                    setRoomId(roomId);
+                    // router.push(`/room/${roomId}`);
+                  }
+                );
+              }}
+            >
+              Create Room
+            </button>
+          </>
+        )}
       </div>
       <div className={style.authOverlay}>
         Please Sign In Before Use

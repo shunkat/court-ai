@@ -11,7 +11,18 @@
     gap: 16px;
     width: 100%;
     button {
+      margin-top: 12px;
       height: 52px;
+      background: #28003e;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      &:disabled {
+        background: #4d4d4d;
+        opacity: 0.8;
+        cursor: not-allowed;
+      }
     }
   }
   &.disable .content {
@@ -56,5 +67,34 @@
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
+  }
+}
+
+.share {
+  width: 360px;
+  &_copy {
+    padding: 12px;
+    border: 1px solid #747775;
+    border-radius: 4px;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &_text {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+  img {
+    height: 24px;
+    width: auto;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.8;
+    }
+    &:active {
+      opacity: 1;
+    }
   }
 }
