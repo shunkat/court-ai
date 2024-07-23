@@ -1,0 +1,56 @@
+.homeworkSection {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  
+  .homeworkContainer {
+    /* 横並びレイアウト */
+    display: flex;
+  
+    ul {
+      list-style: none; // リストのスタイルをリセット
+      padding: 0;
+      margin: 0;
+    }
+  
+    /* plaintiff と defendant のスタイル */
+    .homeworkGroup {
+      
+        border: 1px solid #747775;
+        border-radius: 10px;
+        padding: 24px;
+        margin-right: 24px;
+        z-index: 0;  
+      h3 {
+        margin-bottom: 10px; // 小見出しとリストの間の余白
+      }
+  
+      li {
+        display: flex;
+        align-items: center;
+        align-items: flex-start; // 上揃えにする
+        margin-bottom: 5px; // リスト要素間の余白
+  
+        img {
+          width: 16px;
+          height: 16px;
+          margin-right: 8px;
+          margin-top: 2px; // チェックマークを少し上に調整
+
+        }
+      }
+    }
+  
+  }  
+   
+    /* レスポンシブ対応 */
+    @media (max-width: 768px) {
+      flex-direction: column; // 画面幅が狭い場合は縦並びにする
+  
+      .homeworkGroup {
+        margin-right: 0; // 右側の余白をリセット
+        margin-bottom: 20px; // 下側の余白を追加
+      }
+    }
+  }
+  
