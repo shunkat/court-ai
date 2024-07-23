@@ -1,0 +1,38 @@
+.reasonSection {
+  width: 100%;
+
+  ul {
+    list-style: none;
+    margin-bottom: 12px;
+  }
+
+  .reasonContainer {
+    border: 1px solid #747775;
+    border-radius: 10px;
+    padding: 24px;
+    z-index: 0;
+
+    h3 {
+      margin: 10px;
+    }
+
+    li {
+      display: flex;
+      align-items: flex-start; // 上揃えにする
+      padding: 8px 12px;
+      border-radius: 4px;
+
+      /* レスポンシブ対応 */
+      @media (max-width: 768px) {
+        padding: 6px 10px;
+      }
+
+      img {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        margin-top: 2px; // チェックマークを少し上に調整
+      }
+    }
+  }
+}

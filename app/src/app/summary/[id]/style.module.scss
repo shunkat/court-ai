@@ -1,0 +1,18 @@
+.summaryPage {
+  padding: 40px;
+    display: flex;
+    flex-direction: column; // 縦方向に配置
+    align-items: center;   // 水平方向に中央揃え
+    min-height: 100vh;     // 画面全体の高さを確保
+    gap: 164px;
+
+    .container {
+      max-width: 670px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      gap: 32px;
+    }
+}
+

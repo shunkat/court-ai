@@ -1,0 +1,23 @@
+.shareButtonContainer {
+
+    .shareButton {
+        background-color: black; /* 背景色を黒に */
+        color: white; /* 文字色を白に */
+        padding: 10px 20px; /* ボタン内側の余白 */
+        border: none; /* ボーダーを削除 */
+        border-radius: 25px; /* 角丸 */
+        cursor: pointer; /* カーソルをポインターに変更 */
+        transition: background-color 0.3s ease; /* ホバー時のトランジション */
+      }
+      
+      .shareButton:hover {
+        background-color: #333; /* ホバー時の背景色を少し明るく */
+      }
+    
+    img {
+        width: 14px;
+        height: 14px;
+        margin-left: 8px;
+    }
+}
+

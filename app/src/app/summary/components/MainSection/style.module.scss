@@ -1,0 +1,10 @@
+.mainSentence {
+    font-size: 3.25rem;
+    font-weight: 500;
+    margin-bottom: 1rem;
+    
+    
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+}
