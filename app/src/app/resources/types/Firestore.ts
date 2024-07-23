@@ -53,7 +53,8 @@ export type LawyerResponse = {
   role: "model";
 } & AppModel;
 
-export type JudgmentResult = {
+// 裁判結果要約ページに表示するデータ
+export type JudgmentSummary = {
   roomId: string;
   judgeCount: number;
   mainSentence: string;
