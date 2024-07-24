@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import style from "./style.module.scss";
 import {
   collection,
@@ -10,7 +10,7 @@ import {
 } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/_components/firebase/AuthProvider";
-import GoogleLoginButton from "../GoogleLoginButton";
+import GoogleLoginButton from "@/app/_components/GoogleLoginButton";
 import CopyImage from "./copy.png";
 import Image from "next/image";
 
@@ -21,7 +21,12 @@ export default function RoomBuildForm() {
   const [userName, setUserName] = useState("");
   const [roomId, setRoomId] = useState("");
   const [isCopied, setIsCopied] = useState(false);
-  const sharedUrl = `${window.location.origin}/room/${roomId}/invite`;
+
+  const [sharedUrl, setSharedUrl] = useState("");
+
+  useEffect(() => {
+    setSharedUrl(`${window.location.origin}/room/${roomId}/invite`);
+  }, [roomId]);
 
   return (
     <div className={`${style.roomBuildForm} ${authUser ? "" : style.disable}`}>
@@ -75,7 +80,6 @@ export default function RoomBuildForm() {
                 submit(roomName, authUser?.uid ?? "", userName).then(
                   (roomId) => {
                     setRoomId(roomId);
-                    // router.push(`/room/${roomId}`);
                   }
                 );
               }}

@@ -8,6 +8,8 @@ export default function ChatRoom() {
   const [input, setInput] = useState("");
   const { messages, submit } = useChatRoom();
 
+  const shouldWait = messages[messages.length - 1].role === "user";
+
   return (
     <div className={style.chatRoom}>
       <div className={style.messages}>
@@ -26,6 +28,7 @@ export default function ChatRoom() {
             </div>
           ))
         )}
+        {shouldWait && <div className={style.waiting}>...</div>}
       </div>
       <div className={style.form}>
         <input
@@ -38,6 +41,7 @@ export default function ChatRoom() {
             submit(input);
             setInput("");
           }}
+          disabled={shouldWait}
         >
           Submit
         </button>

@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "../../../_components/firebase/AuthProvider";
+import { useAuth } from "../firebase/AuthProvider";
 import style from "./style.module.scss";
 
 export default function GoogleLoginButton() {

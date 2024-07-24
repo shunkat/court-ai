@@ -8,11 +8,7 @@ type Props = {
   children: ReactNode;
 };
 // Firestoreはログインやユーザー登録の実装には使わないが、今後のことを考えて入れておく
-import {
-  browserLocalPersistence,
-  connectAuthEmulator,
-  getAuth,
-} from "firebase/auth";
+import { connectAuthEmulator, getAuth } from "firebase/auth";
 
 // .envファイルで設定した環境変数をfirebaseConfigに入れる
 const firebaseConfig: FirebaseOptions = {

@@ -18,13 +18,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { User } from "@/app/resources/types/Firestore";
-import {
-  getDoc,
-  getFirestore,
-  doc,
-  serverTimestamp,
-  setDoc,
-} from "firebase/firestore";
+import { getDoc, getFirestore, doc } from "firebase/firestore";
 import { getClientConverter } from "@/app/resources/types/ClientFirestore";
 
 interface AuthContextType {
