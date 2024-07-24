@@ -51,10 +51,10 @@ export default function ChatRoomProvider(props: {
 
   useEffect(() => {
     if (!roomUser) return;
+    if (!roomUser.id) return;
     const _query = query(
       collection(getFirestore(), "chats"),
       where("roomUserId", "==", roomUser.id),
-      // where("createdAt", ">", Timestamp.now()),
       orderBy("createdAt")
     );
     const unsubscribe = onSnapshot(_query, (snapshot) => {
@@ -72,23 +72,25 @@ export default function ChatRoomProvider(props: {
 
   useEffect(() => {
     getDoc(
-      doc(getFirestore(), "rooms", props.roomId).withConverter(
+      doc(getFirestore(), `rooms/${props.roomId}`).withConverter(
         getClientConverter<Room>()
       )
     ).then((snapshot) => {
       setRoom(snapshot.data() as Room);
     });
-  }, []);
+  }, [props.roomId]);
 
   useEffect(() => {
     if (!authUser) return;
+    console.log("authUser", authUser);
+    console.log("props.roomId", props.roomId);
     const _query = query(
       collection(getFirestore(), "room_users"),
       where("roomId", "==", props.roomId),
       where("userId", "==", authUser?.uid)
     ).withConverter(getClientConverter<RoomUser>());
     getDocs(_query).then((snapshot) => {
-      setRoomUser(snapshot.docs[0].data() as RoomUser);
+      setRoomUser(snapshot.docs[0].data());
     });
   }, [props.roomId, authUser]);
 
