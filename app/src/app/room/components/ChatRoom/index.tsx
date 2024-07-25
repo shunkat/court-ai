@@ -3,12 +3,13 @@ import { useState } from "react";
 import style from "./style.module.scss";
 import MessageBlock from "../MessageBlock";
 import { useChatRoom } from "../ChatRoomProvider";
+import ReactLoading from "react-loading";
 
 export default function ChatRoom() {
   const [input, setInput] = useState("");
   const { messages, submit } = useChatRoom();
 
-  const shouldWait = messages[messages.length - 1].role === "user";
+  const shouldWait = messages[messages.length - 1]?.role === "user";
 
   return (
     <div className={style.chatRoom}>
@@ -20,7 +21,10 @@ export default function ChatRoom() {
                 isOwn={message.role === "user"}
                 user={{
                   name: "User",
-                  thumbnailSrc: "https://picsum.photos/200",
+                  thumbnailSrc: `/lawyers/${
+                    // @ts-ignore
+                    message.category ?? "intake"
+                  }.webp`,
                 }}
               >
                 {content.text}
@@ -28,7 +32,7 @@ export default function ChatRoom() {
             </div>
           ))
         )}
-        {shouldWait && <div className={style.waiting}>...</div>}
+        {shouldWait && <ReactLoading type="bubbles" color="gray" height={50} />}
       </div>
       <div className={style.form}>
         <input
@@ -41,7 +45,7 @@ export default function ChatRoom() {
             submit(input);
             setInput("");
           }}
-          disabled={shouldWait}
+          disabled={shouldWait || !input}
         >
           Submit
         </button>
