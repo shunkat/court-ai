@@ -10,6 +10,7 @@ export default function ChatRoom() {
   const { messages, submit } = useChatRoom();
 
   const shouldWait = messages[messages.length - 1]?.role === "user";
+  const canFinish = true;
 
   return (
     <div className={style.chatRoom}>
@@ -33,6 +34,17 @@ export default function ChatRoom() {
           ))
         )}
         {shouldWait && <ReactLoading type="bubbles" color="gray" height={50} />}
+        {canFinish && (
+          <div className={style.canFinish}>
+            <div className={style.buttons}>
+              <button className={style.startJudge}>Start Judge</button>
+              <button className={style.continueChat}>Continute Chat</button>
+            </div>
+            <div className={style.description}>
+              You cannot add more messages until the judge will be completed.
+            </div>
+          </div>
+        )}
       </div>
       <div className={style.form}>
         <input

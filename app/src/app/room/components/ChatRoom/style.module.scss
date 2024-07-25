@@ -30,3 +30,39 @@
     }
   }
 }
+
+.canFinish {
+  margin: 40px auto;
+  width: max-content;
+  .buttons {
+    display: flex;
+    gap: 10px;
+    width: 400px;
+    margin: auto;
+    justify-content: center;
+    .startJudge,
+    .continueChat {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .startJudge {
+      width: 70%;
+      background: #004201;
+      color: white;
+      font-weight: bold;
+    }
+    .continueChat {
+      width: 30%;
+      flex-grow: 1;
+      background: transparent;
+      color: white;
+    }
+  }
+  .description {
+    margin-top: 12px;
+    font-weight: bold;
+    color: rgb(200, 0, 0);
+  }
+}
