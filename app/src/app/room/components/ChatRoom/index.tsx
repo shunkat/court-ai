@@ -3,12 +3,14 @@ import { useState } from "react";
 import style from "./style.module.scss";
 import MessageBlock from "../MessageBlock";
 import { useChatRoom } from "../ChatRoomProvider";
+import ReactLoading from "react-loading";
 
 export default function ChatRoom() {
   const [input, setInput] = useState("");
   const { messages, submit } = useChatRoom();
 
-  const shouldWait = messages[messages.length - 1].role === "user";
+  const shouldWait = messages[messages.length - 1]?.role === "user";
+  const canFinish = true;
 
   return (
     <div className={style.chatRoom}>
@@ -20,7 +22,10 @@ export default function ChatRoom() {
                 isOwn={message.role === "user"}
                 user={{
                   name: "User",
-                  thumbnailSrc: "https://picsum.photos/200",
+                  thumbnailSrc: `/lawyers/${
+                    // @ts-ignore
+                    message.category ?? "intake"
+                  }.webp`,
                 }}
               >
                 {content.text}
@@ -28,7 +33,18 @@ export default function ChatRoom() {
             </div>
           ))
         )}
-        {shouldWait && <div className={style.waiting}>...</div>}
+        {shouldWait && <ReactLoading type="bubbles" color="gray" height={50} />}
+        {canFinish && (
+          <div className={style.canFinish}>
+            <div className={style.buttons}>
+              <button className={style.startJudge}>Start Judge</button>
+              <button className={style.continueChat}>Continute Chat</button>
+            </div>
+            <div className={style.description}>
+              You cannot add more messages until the judge will be completed.
+            </div>
+          </div>
+        )}
       </div>
       <div className={style.form}>
         <input
@@ -41,7 +57,7 @@ export default function ChatRoom() {
             submit(input);
             setInput("");
           }}
-          disabled={shouldWait}
+          disabled={shouldWait || !input}
         >
           Submit
         </button>
