@@ -13,7 +13,7 @@ type OppositeProps = {
     name: string;
     thumbnailSrc: string;
   };
-  children: React.ReactNode;
+  children: string;
 };
 
 type Props = OwnProps | OppositeProps;

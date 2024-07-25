@@ -46,6 +46,17 @@ export type Claim = {
   role: "user";
 } & AppModel;
 
+type BattleMessage = {
+  role: "judge" | "defendant" | "plaintiff";
+  text: string;
+};
+
+export type Battle = {
+  roomId: string;
+  contents: BattleMessage[];
+  judgeCount: 0 | 1 | 2 | 3;
+} & AppModel;
+
 export type LawyerResponse = {
   roomId: string;
   roomUserId: string;
