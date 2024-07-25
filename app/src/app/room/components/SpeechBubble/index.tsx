@@ -1,4 +1,5 @@
 import style from "./style.module.scss";
+import ReactMarkdown from "react-markdown";
 
 type Props = {
   isOwn: boolean;
@@ -12,7 +13,7 @@ export default function SpeechBubble(props: Props) {
         props.isOwn ? style.own : style.opposite
       }`}
     >
-      {props.children}
+      <ReactMarkdown>{props.children as string}</ReactMarkdown>
     </div>
   );
 }
