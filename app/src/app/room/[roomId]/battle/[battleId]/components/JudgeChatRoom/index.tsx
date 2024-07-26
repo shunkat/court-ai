@@ -4,6 +4,8 @@ import style from "./style.module.scss";
 import ReactLoading from "react-loading";
 import {
   collection,
+  doc,
+  getDoc,
   getDocs,
   getFirestore,
   limit,
@@ -14,19 +16,24 @@ import { getClientConverter } from "@/app/resources/types/ClientFirestore";
 import { Battle } from "@/app/resources/types/Firestore";
 import MessageBlock from "@/app/room/components/MessageBlock";
 
-export default function ChatRoom({ roomId }: { roomId: string }) {
+type Props = {
+  roomId: string;
+  battleId: string;
+};
+export default function ChatRoom({ roomId, battleId }: Props) {
   const [messages, setMessages] = useState<Battle["contents"]>([]);
   const [allLoaded, setAllLoaded] = useState(false);
 
   useEffect(() => {
-    getDocs(
-      query(
-        collection(getFirestore(), "battles"),
-        where("roomId", "==", roomId),
-        limit(1)
-      ).withConverter(getClientConverter<Battle>())
-    ).then((querySnapshot) => {
-      const data = querySnapshot.docs[0].data();
+    getDoc(
+      doc(getFirestore(), `battles/${battleId}`).withConverter(
+        getClientConverter<Battle>()
+      )
+    ).then((snapshot) => {
+      const data = snapshot.data();
+      if (!data) return;
+      if (data.roomId !== roomId) return;
+
       data.contents.forEach((content, i) => {
         setTimeout(() => {
           setMessages((prev) => [...prev, content]);
@@ -34,7 +41,7 @@ export default function ChatRoom({ roomId }: { roomId: string }) {
         }, 3000 * (i + 1));
       });
     });
-  }, [roomId]);
+  }, [roomId, battleId]);
 
   return (
     <div className={style.chatRoom}>
