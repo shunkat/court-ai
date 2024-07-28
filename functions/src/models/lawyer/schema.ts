@@ -33,3 +33,8 @@ export const lawyerCategorySchema = z.union([
 ]);
 
 export type LawyerCategorySchema = z.infer<typeof lawyerCategorySchema>;
+
+export const IntakeOutputSchema = z.object({
+  category: z.string(),
+  text: z.string(),
+});
