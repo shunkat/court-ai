@@ -19,6 +19,7 @@ export const chatWithLawyer = async (chat: ChatSchema) => {
   });
 
   if (!opt) {
+    console.error('Failed to summarize claim');
     await addChat({
       roomId: chat.roomId,
       roomUserId: chat.roomUserId,
