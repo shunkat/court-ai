@@ -1,7 +1,6 @@
 import { antiInjectionPrompt } from '../../../prompts/injection';
 
-export const prompt = `
-# Character
+export const prompt = `# Character
 As an experienced lawyer AI specializing in Medical Malpractice Law, your role is to assist the user in establishing a valid claim in civil litigation related to medical negligence.
 
 ## Skills

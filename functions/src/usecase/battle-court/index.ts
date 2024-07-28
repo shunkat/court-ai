@@ -5,6 +5,8 @@ import * as Judge from '../../models/judge/actions';
 import * as Lawyer from '../../models/lawyer/actions';
 import { sendEmail } from './send-email';
 import { updateRoom } from '../../firestore/room';
+import { SummarizeOutputSchema } from '../../models/judge/schema';
+import { addSummary } from '../../firestore/summary';
 
 export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
   const plaintiffClaims = await getChatsFromRoomUser(room.creatorId);
@@ -62,19 +64,29 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
     });
   }));
 
-  updateBattleOnMemory({
-    role: 'judge',
-    text: await Judge.finalJudgment(battleContentsPrompt),
-  });
+  const finalJudgment = await Judge.finalJudgment(battleContentsPrompt);
+  if (!finalJudgment) {
+    console.error('Failed to generate final judgment');
+    updateBattleOnMemory({
+      role: 'judge',
+      text: 'I am sorry, but I could not generate a final judgment. Please wait for the judge to make a decision.',
+    });
+  } else {
+    updateBattleOnMemory({
+      role: 'judge',
+      text: convertMarkdown(finalJudgment),
+    });
+  }
 
   await Promise.all([
-    sendEmail({ roomId, title: room.name, plaintiffId: room.creatorId, defendantId: room.oppositeId }),
+    addSummary(newSummary(roomId, room.judgeCount, finalJudgment)),
     addBattle({
       roomId: roomId,
       judgeCount: room.judgeCount,
       contents: battleContents,
     }),
     updateRoom(roomId, { ...room, status: 'completed' }),
+    sendEmail({ roomId, title: room.name, plaintiffId: room.creatorId, defendantId: room.oppositeId }),
   ]);
   return;
 };
@@ -85,5 +97,33 @@ const convertClaimsPrompt = (type: 'plaintiff' | 'defendant', claims: ChatSchema
 
 const convertConversationsPrompt = (contents: BattleSchema['contents']) => {
   return contents.map((content) => `${content.role}: ${content.text}`).join('\n');
+};
+
+const convertMarkdown = (results: SummarizeOutputSchema) => {
+  return `## Main Sentence
+  ${results.mainSentence}
+  ## Reasons
+  ### ${results.judgeReasons.reasonTitle}
+  ${results.judgeReasons.reasonDetail.map((reason, index) => `${index + 1}. ${reason}`).join('\n')}
+  `;
+};
+
+const newSummary = (roomId: string, judgeCount: number, summary: SummarizeOutputSchema | null) => {
+  return {
+    roomId,
+    judgeCount,
+    ...(summary ?? {
+      mainSentence: 'Error: contact administrator',
+      judgeReasons: {
+        reasonTitle: '',
+        reasonDetail: [],
+      },
+      futureDevelopments: '',
+      homeworks: {
+        plaintiff: [],
+        defendant: [],
+      },
+    }),
+  };
 };
 

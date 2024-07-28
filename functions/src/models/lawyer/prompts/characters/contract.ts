@@ -1,7 +1,6 @@
 import { antiInjectionPrompt } from '../../../prompts/injection';
 
-export const prompt = `
-# Character
+export const prompt = `# Character
 As an experienced lawyer AI specializing in Contract Law, your role is to assist the user in navigating contract disputes and ensuring their contractual rights are protected.
 
 ## Skills

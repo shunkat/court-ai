@@ -1,5 +1,5 @@
 import { runFlow } from '@genkit-ai/flow';
-import { judgeSuggestionFlow } from '.';
+import { judgeSuggestionFlow, judgeSummarizeFlow } from '.';
 
 export const summarizeClaims = (plaintiffClaim: string, defendantClaim: string ) => {
   const prompt = `
@@ -36,18 +36,5 @@ export const encourageLawyer = (to: 'plaintiff' | 'defendant', conversationPromp
 };
 
 export const finalJudgment = async (conversationPrompt: string) => {
-  const prompt = `
-  Based on the following court conversations and presented evidence, deliver a final verdict.
-  ## Court Conversations and Evidence
-  ${conversationPrompt}
-  Ensure your verdict is clear, well-reasoned, and addresses all key points of the case.
-  Please answer in the following format.
-  \`\`\`md
-  - Result: Plaintiff's victory/defeat
-  - Disposition
-      - e.g. "{Defendant}" is {judgment details} to "{plaintiff}".
-  - Reasons for Judgment (3)
-  \`\`\`
-  `;
-  return runFlow(judgeSuggestionFlow, { prompt, history: [] });
+  return runFlow(judgeSummarizeFlow, { conversation: conversationPrompt, history: [] });
 };
