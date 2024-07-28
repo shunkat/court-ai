@@ -19,7 +19,9 @@ export type User = {
 
 export type RoomUser = {
   userId: string;
+  roomId: string;
   name: string;
+  claimStatus: "shortage" | "sufficient" | "finished";
 } & AppModel;
 
 export type RoomStatus = "created" | "judge" | "completed";
