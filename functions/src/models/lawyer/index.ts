@@ -30,7 +30,7 @@ const lawyerSuggestionFlow = (category: LawyerCategorySchema, name: string) => d
 );
 
 const getSystemPrompt = async (category: LawyerCategorySchema) => {
-  const filePath = path.resolve(__dirname, `./prompts/${category}`);
+  const filePath = path.resolve(__dirname, `./prompts/characters/${category}`);
   return await import(filePath).then((module) => module.prompt);
 };
 
