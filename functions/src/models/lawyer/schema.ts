@@ -22,7 +22,8 @@ export const summarizeClaimOutputSchema = z.object({
 });
 
 export const lawyerCategorySchema = z.union([
-  z.literal('general'),
+  z.literal('intake'), // 受付
+  z.literal('general'), // 一般(下記の法律に当てはまらない場合)
   z.literal('bankruptcy'), // 債務整理・破産法
   z.literal('business'), // 会社法
   z.literal('consumer'), // 消費者法
@@ -38,3 +39,8 @@ export const lawyerCategorySchema = z.union([
 ]);
 
 export type LawyerCategorySchema = z.infer<typeof lawyerCategorySchema>;
+
+export const IntakeOutputSchema = z.object({
+  category: z.string(),
+  text: z.string(),
+});
