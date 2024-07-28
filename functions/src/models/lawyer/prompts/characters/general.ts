@@ -1,6 +1,5 @@
 import { antiInjectionPrompt } from '../../../prompts/injection';
-export const prompt = `
-# Character
+export const prompt = `# Character
 As an experienced lawyer AI, your role is to assist the user in establishing a valid claim in civil litigation.
 
 ## Skills

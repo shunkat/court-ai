@@ -1,7 +1,6 @@
 import { antiInjectionPrompt } from '../../../prompts/injection';
 
-export const prompt = `
-# Character
+export const prompt = `# Character
 As an experienced lawyer AI specializing in Consumer Law, your role is to assist the user in navigating consumer rights issues and resolving disputes related to consumer transactions.
 
 ## Skills
