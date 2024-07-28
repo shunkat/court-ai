@@ -18,6 +18,7 @@
       font-weight: bold;
       border-radius: 8px;
       cursor: pointer;
+      color: white;
       &:disabled {
         background: #4d4d4d;
         opacity: 0.8;
@@ -85,16 +86,49 @@
       overflow: hidden;
       white-space: nowrap;
     }
-  }
-  img {
-    height: 24px;
-    width: auto;
-    cursor: pointer;
-    &:hover {
-      opacity: 0.8;
-    }
-    &:active {
-      opacity: 1;
+    &_image {
+      // <div
+      //   style={{
+      //     overflow: 'hidden',
+      //     position: 'relative',
+      //     width: iconWidth ?? 'auto',
+      //     height: iconHeight ?? 'auto',
+      //   }}
+      // >
+      //   <AppImage
+      //     alt="icon"
+      //     {...imageProps}
+      //     style={{
+      //       height: '100%',
+      //       width: '100%',
+      //       filter: `drop-shadow(100px 0px 0px ${iconColor})`,
+      //       position: 'relative',
+      //       left: '-100px',
+      //       objectFit: 'contain',
+      //       ...imageProps.style,
+      //     }}
+      //   />
+      // </div>
+      overflow: hidden;
+      position: relative;
+      width: auto;
+      height: auto;
+      cursor: pointer;
+      &:hover {
+        opacity: 0.8;
+      }
+      &:active {
+        opacity: 1;
+      }
+      img {
+        height: 100%;
+        width: 100%;
+        filter: drop-shadow(100px 0px 0px rgb(var(--foreground-rgb)));
+        position: relative;
+        left: -100px;
+        object-fit: contain;
+        height: 24px;
+      }
     }
   }
 }
