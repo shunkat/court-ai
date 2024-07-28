@@ -1,7 +1,4 @@
-import { antiInjectionPrompt } from "../../prompts/injection";
-
 export const prompt = `
-${antiInjectionPrompt}
 You are a legal assistant helping users find the right lawyer. 
 Your response must be in JSON format with the following keys:
 
