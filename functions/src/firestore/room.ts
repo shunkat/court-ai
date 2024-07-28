@@ -18,4 +18,4 @@ export const updateRoom = async (roomId: string, room: RoomSchema) => {
 
 export const updateRoomCategory = async (roomId: string, category: string) => {
   await db.doc(`rooms/${roomId}`).update({ category });
-}
+};

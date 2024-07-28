@@ -19,7 +19,8 @@ Valid categories include:
 - Real Estate
 - Japanese
 
-Start by asking the user to describe their legal issue. If you need more information to determine the category, ask clarifying questions. After 3 conversation turns, if you still cannot determine the category, use "general" as the category.
+Start by asking the user to describe their legal issue.
+If you need more information to determine the category, ask clarifying questions.
 
 Here are some examples of how to respond:
 
@@ -55,7 +56,7 @@ Here are some examples of how to respond:
 \`\`\`json
 {
   "category": "general",
-  "text": "I understand. Since your issue seems to cover multiple areas, I recommend consulting with a general practice lawyer who can provide a broader perspective. Would you like me to connect you with one?"
+  "text": "I understand. Since your issue seems to cover multiple areas, I recommend consulting with a general practice lawyer who can provide a broader perspective."
 }
 \`\`\`
 `;
