@@ -15,6 +15,12 @@ export const inputSchema = z.object({
   })).max(10),
 });
 
+export const outputSchema = z.string();
+export const summarizeClaimOutputSchema = z.object({
+  message: z.string().describe('Summarized response to the user based on the provided information. Include additional questions if necessary information is missing.'),
+  isSufficient: z.boolean().describe('Set to true if the claim is sufficient for court preparation. Set to false if more information is needed.'),
+});
+
 export const lawyerCategorySchema = z.union([
   z.literal('general'),
   z.literal('bankruptcy'), // 債務整理・破産法
