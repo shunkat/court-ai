@@ -53,7 +53,9 @@ export default function ChatRoomProvider(props: {
     if (!roomUser) return;
     if (!roomUser.id) return;
     const _query = query(
-      collection(getFirestore(), "chats"),
+      collection(getFirestore(), "chats").withConverter(
+        getClientConverter<Chat>()
+      ),
       where("roomUserId", "==", roomUser.id),
       orderBy("createdAt")
     );
@@ -62,7 +64,11 @@ export default function ChatRoomProvider(props: {
       snapshot.forEach((doc) => {
         newMessages.push(doc.data() as Chat);
       });
-      setMessages([...messages, ...newMessages]);
+
+      const list = [...messages, ...newMessages];
+      setMessages(
+        list.filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i)
+      );
     });
 
     return () => {
@@ -89,9 +95,12 @@ export default function ChatRoomProvider(props: {
       where("roomId", "==", props.roomId),
       where("userId", "==", authUser?.uid)
     ).withConverter(getClientConverter<RoomUser>());
-    getDocs(_query).then((snapshot) => {
-      setRoomUser(snapshot.docs[0].data());
+    const unsubscribe = onSnapshot(_query, (snapshot) => {
+      const newRoomUser = snapshot.docs[0].data();
+      setRoomUser(newRoomUser);
     });
+
+    return unsubscribe;
   }, [props.roomId, authUser]);
 
   const submit = async (message: string) => {

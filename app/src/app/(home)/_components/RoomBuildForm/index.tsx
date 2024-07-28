@@ -13,6 +13,8 @@ import { useAuth } from "@/app/_components/firebase/AuthProvider";
 import GoogleLoginButton from "@/app/_components/GoogleLoginButton";
 import CopyImage from "./copy.png";
 import Image from "next/image";
+import { Room, RoomUser } from "@/app/resources/types/Firestore";
+import { getClientConverter } from "@/app/resources/types/ClientFirestore";
 
 export default function RoomBuildForm() {
   const router = useRouter();
@@ -116,6 +118,7 @@ async function submit(roomName: string, userId: string, userName: string) {
     name: userName,
     userId: userId,
     roomId: roomRef.id,
+    claimStatus: "shortage",
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });

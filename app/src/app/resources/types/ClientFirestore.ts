@@ -23,7 +23,7 @@ export function getClientConverter<T extends AppModel>(): ClientConverter<T> {
       return {
         id: snapshot.id,
         ...data,
-        createdAt: data.createdAt.toDate(),
+        createdAt: data.createdAt?.toDate(),
         updatedAt: data.updatedAt?.toDate(),
       } as Required<T>;
     },
