@@ -67,14 +67,7 @@ export default function RoomInviteForm(props: Props) {
               <p>Creator cannot join as Opposite</p>
               <p>Please Share this page to other.</p>
             </div>
-            <button
-              onClick={async () => {
-                await submit(props.roomId, userName);
-                router.push(`/room/${props.roomId}`);
-              }}
-            >
-              Go to Room
-            </button>
+            <button>Go to Room</button>
           </>
         ) : (
           <>
@@ -92,7 +85,7 @@ export default function RoomInviteForm(props: Props) {
             </div>
             <button
               onClick={async () => {
-                await submit(props.roomId, userName);
+                await submit(props.roomId, userName, authUser!.uid);
                 router.push(`/room/${props.roomId}`);
               }}
             >
@@ -111,7 +104,7 @@ export default function RoomInviteForm(props: Props) {
   );
 }
 
-async function submit(roomId: string, userName: string) {
+async function submit(roomId: string, userName: string, userId: string) {
   const batch = writeBatch(getFirestore());
   const roomRef = doc(collection(getFirestore(), "rooms"), roomId);
   const roomUserRef = doc(collection(getFirestore(), "room_users"));
@@ -125,7 +118,7 @@ async function submit(roomId: string, userName: string) {
   );
   batch.set(roomUserRef, {
     name: userName,
-    userId: roomUserRef.id,
+    userId: userId,
     roomId: roomRef.id,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
