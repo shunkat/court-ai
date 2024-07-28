@@ -34,7 +34,20 @@ const getSystemPrompt = async (category: LawyerCategorySchema) => {
   return await import(filePath).then((module) => module.prompt);
 };
 
-export const llmFlows = {
+const getUserPrompt = (input: string) => {
+  return `{Output} according to the specified format based on the user's {Input}.
+## Input
+${input}
+## Output
+- Provide the output in JSON format.
+\`\`\`json
+  {message: {string}, isSufficient: {boolean}}
+\`\`\`
+The "message" field represents the response to the user, and the "isSufficient" field indicates whether the information is sufficient for litigation preparation.
+`;
+};
+
+export const lawyerFlows = {
   'general': lawyerSuggestionFlow('general', 'generalLawyerSuggestionFlow'),
   'bankruptcy': lawyerSuggestionFlow('bankruptcy', 'bankruptcyLawyerSuggestionFlow'),
   'business': lawyerSuggestionFlow('business', 'businessLawyerSuggestionFlow'),

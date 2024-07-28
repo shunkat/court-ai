@@ -1,5 +1,5 @@
 import { runFlow } from '@genkit-ai/flow';
-import { llmFlows } from '.';
+import { lawyerFlows } from '.';
 import { LawyerCategorySchema } from './schema';
 
 type Args = {
@@ -19,7 +19,7 @@ export const openingStatement = ({ role, category, claimsPrompt, conversationsPr
   Ensure your statement is persuasive, addresses key points raised by the ${role}s, and sets a strong tone for your client's defense.
   `;
 
-  return runFlow(llmFlows[category], { prompt, history: [] });
+  return runFlow(lawyerFlows[category], { prompt, history: [] });
 };
 
 export const provideEvidence = ({ role, category, claimsPrompt, conversationsPrompt }: Args) => {
@@ -33,5 +33,5 @@ export const provideEvidence = ({ role, category, claimsPrompt, conversationsPro
   Ensure your presentation is clear, concise, and effectively demonstrates the validity of the ${role}s' claims.
   `;
 
-  return runFlow(llmFlows[category], { prompt, history: [] });
+  return runFlow(lawyerFlows[category], { prompt, history: [] });
 };
