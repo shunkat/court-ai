@@ -13,6 +13,8 @@ import { useAuth } from "@/app/_components/firebase/AuthProvider";
 import GoogleLoginButton from "@/app/_components/GoogleLoginButton";
 import CopyImage from "./copy.png";
 import Image from "next/image";
+import { Room, RoomUser } from "@/app/resources/types/Firestore";
+import { getClientConverter } from "@/app/resources/types/ClientFirestore";
 
 export default function RoomBuildForm() {
   const router = useRouter();
@@ -35,17 +37,18 @@ export default function RoomBuildForm() {
           <>
             <div className={style.share}>
               <label>Share the URL to Opposite.</label>
-              <div className={style.share_copy}>
+              <div
+                className={style.share_copy}
+                onClick={() => {
+                  navigator.clipboard.writeText(sharedUrl);
+                  setIsCopied(true);
+                  window.alert("Copied!");
+                }}
+              >
                 <span className={style.share_copy_text}>{sharedUrl}</span>
-                <Image
-                  src={CopyImage}
-                  alt="Copy"
-                  onClick={() => {
-                    navigator.clipboard.writeText(sharedUrl);
-                    setIsCopied(true);
-                    window.alert("Copied!");
-                  }}
-                />
+                <div className={style.share_copy_image}>
+                  <Image src={CopyImage} alt="Copy" />
+                </div>
               </div>
             </div>
             <button
@@ -115,6 +118,7 @@ async function submit(roomName: string, userId: string, userName: string) {
     name: userName,
     userId: userId,
     roomId: roomRef.id,
+    claimStatus: "shortage",
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });

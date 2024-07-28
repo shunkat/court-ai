@@ -86,20 +86,20 @@ export const battleSchema = z.object({
 export type BattleSchema = z.infer<typeof battleSchema>;
 
 // 裁判結果のスキーマ
-export const judgmentResultSchema = z.object({
+export const summarySchema = z.object({
   roomId: z.string(), // どの部屋の判決か
   judgeCount: z.number().int().min(0),
   mainSentence: z.string(), // 裁判の主文
   judgeReasons: z.object({
     reasonTitle: z.string(),
     reasonDetail: z.array(z.string()),
-  }), // 判決理由 (複数)
+  }), // 判決理由 (一旦、一つでok)
   futureDevelopments: z.string(), // 今後の展開
   homeworks: z.object({ // 宿題 (原告と被告それぞれ)
     plaintiff: z.array(z.string()), // 原告
     defendant: z.array(z.string()), // 被告
   }),
-  createdAt: firestoreTimestampSchema,
+  createdAt: firestoreTimestampLooseSchema,
   updatedAt: firestoreTimestampLooseSchema.optional(),
 });
-export type JudgmentSchema = z.infer<typeof judgmentResultSchema>;
+export type SummarySchema = z.infer<typeof summarySchema>;

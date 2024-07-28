@@ -24,8 +24,10 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     background: #28003e;
+    color: white;
+    font-weight: bold;
     &:disabled {
-      opacity: 0.7;
+      opacity: 0.3;
       cursor: not-allowed;
     }
   }
@@ -65,4 +67,12 @@
     font-weight: bold;
     color: rgb(200, 0, 0);
   }
+}
+
+.notify {
+  margin: auto;
+  margin-top: 30px;
+  text-align: center;
+  font-weight: bold;
+  color: rgb(200, 0, 0);
 }

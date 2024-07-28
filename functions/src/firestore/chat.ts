@@ -17,7 +17,6 @@ export const getChatsFromRoomUser = async (roomUserId: string, option?: {
 
   const snapshot = await q.get();
 
-
   const chats = snapshot.docs.map((doc) => {
     const chat = chatSchema.safeParse(doc.data());
     if (chat.success) return chat.data;

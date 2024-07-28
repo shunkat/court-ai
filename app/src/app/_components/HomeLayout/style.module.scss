@@ -29,7 +29,7 @@
     h2 {
       margin-left: 8px;
       padding: 0 8px;
-      background: black;
+      background: rgb(var(--background-start-rgb));
       display: inline-block;
       z-index: 1;
     }
@@ -54,7 +54,7 @@
   h2 {
     margin-left: 8px;
     padding: 0 8px;
-    background: black;
+    background: rgb(var(--background-start-rgb));
     display: inline-block;
     z-index: 1;
   }
