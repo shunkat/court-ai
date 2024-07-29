@@ -1,10 +1,11 @@
 import { runFlow } from '@genkit-ai/flow';
 import { getChatsFromRoomUser, addChat } from '../firestore/chat';
-import { getRoom, updateRoomCategory } from '../firestore/room';
-import { ChatSchema } from '../firestore/schema';
+import { getRoom, updateRoom } from '../firestore/room';
+import { ChatSchema, RoomCreatedSchema } from '../firestore/schema';
 import { getRoomUser, updateRoomUser } from '../firestore/room-user';
 import { handleIntakeFlow } from '../models/intake';
 import { lawyerSummarizeClaimFlows } from '../models/lawyer';
+import { LawyerCategorySchema } from '../models/lawyer/schema';
 
 export const chatWithLawyer = async (chat: ChatSchema) => {
   // ! Caution: infinite loop
@@ -12,47 +13,17 @@ export const chatWithLawyer = async (chat: ChatSchema) => {
   if (chat.role !== 'user') return;
 
   const room = await getRoom(chat.roomId);
-  const category = room?.category;
-  let message = '';
-
-  const history = await getChatsFromRoomUser(chat.roomUserId, { last: 5 });
-
-  if (!category || category === 'intake') {
-    const result = await runFlow(handleIntakeFlow, {
-      prompt: chat.content.reduce((acc, cur) => acc + cur.text, ''),
-      history,
-    });
-
-    if (result.category) {
-      await updateRoomCategory(chat.roomId, result.category);
-    }
-    message = result.text;
-  } else {
-    const opt = await runFlow(lawyerSummarizeClaimFlows[category], {
-      prompt: chat.content.reduce((acc, cur) => acc + cur.text, ''),
-      history,
-    });
-
-    if (!opt) {
-      console.error('Failed to summarize claim');
-      await addChat({
-        roomId: chat.roomId,
-        roomUserId: chat.roomUserId,
-        role: 'model',
-        content: [{ text: 'Could you please elaborate a little more?' }],
-      });
-      return;
-    }
-
-    message = opt.message;
-
-    if (opt.isSufficient) {
-      const roomUser = await getRoomUser(chat.roomUserId);
-      if (roomUser?.claimStatus !== 'shortage') return;
-
-      await updateRoomUser(chat.roomUserId, { ...roomUser, claimStatus: 'sufficient' });
-    }
+  if (!room) {
+    console.error('Room doesn\'t exist');
+    return;
   }
+
+  const category = room.category;
+
+  const message = (!category || category === 'intake') ?
+    await handleIntake(chat, room) : await handleClaim(chat, category);
+
+  if (!message) return;
 
   await addChat({
     roomId: chat.roomId,
@@ -60,6 +31,59 @@ export const chatWithLawyer = async (chat: ChatSchema) => {
     role: 'model',
     content: [{ text: message }],
   });
+};
 
-  return;
+const handleIntake = async (chat: ChatSchema, room:RoomCreatedSchema ) => {
+  const history = await getChatsFromRoomUser(chat.roomUserId, { last: 5 });
+
+  const result = await runFlow(handleIntakeFlow, {
+    prompt: chat.content.reduce((acc, cur) => acc + cur.text, ''),
+    history,
+  });
+
+  if (!result) {
+    console.error('Failed to handle intake');
+    await addChat({
+      roomId: chat.roomId,
+      roomUserId: chat.roomUserId,
+      role: 'model',
+      content: [{ text: 'Could you please elaborate a little more?' }],
+    });
+    return;
+  }
+
+  if (result.category !== 'null') {
+    await updateRoom(chat.roomId, { ...room, category: result.category });
+  }
+
+  return result.text;
+};
+
+const handleClaim = async (chat: ChatSchema, category: LawyerCategorySchema ) => {
+  const history = await getChatsFromRoomUser(chat.roomUserId, { last: 5 });
+
+  const opt = await runFlow(lawyerSummarizeClaimFlows[category], {
+    prompt: chat.content.reduce((acc, cur) => acc + cur.text, ''),
+    history,
+  });
+
+  if (!opt) {
+    console.error('Failed to summarize claim');
+    await addChat({
+      roomId: chat.roomId,
+      roomUserId: chat.roomUserId,
+      role: 'model',
+      content: [{ text: 'Could you please elaborate a little more?' }],
+    });
+    return;
+  }
+
+  if (opt.isSufficient) {
+    const roomUser = await getRoomUser(chat.roomUserId);
+    if (roomUser?.claimStatus !== 'shortage') return;
+
+    await updateRoomUser(chat.roomUserId, { ...roomUser, claimStatus: 'sufficient' });
+  }
+
+  return opt.message;
 };
