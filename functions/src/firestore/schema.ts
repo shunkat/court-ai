@@ -4,7 +4,7 @@ import { lawyerCategorySchema } from '../models/lawyer/schema';
 
 const roomCreatedSchema = z.object({
   name: z.string(),
-  category: lawyerCategorySchema.optional(),
+  category: z.union([lawyerCategorySchema, z.literal('intake')]).optional(), // intakeは受付
   status: z.literal('created'),
   judgeCount: z.number().int().min(0),
   creatorId: z.string(), // RoomUser
@@ -12,6 +12,7 @@ const roomCreatedSchema = z.object({
   createdAt: firestoreTimestampSchema,
   updatedAt: firestoreTimestampLooseSchema.optional(),
 });
+export type RoomCreatedSchema = z.infer<typeof roomCreatedSchema>;
 
 export const roomJudgeSchema = z.object({
   name: z.string(),

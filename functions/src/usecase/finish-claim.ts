@@ -13,7 +13,7 @@ export const finishAllClaims = async (roomUser: RoomUserSchema) => {
     await updateRoom(roomUser.roomId, {
       ...room,
       oppositeId: room.oppositeId!, // type assist
-      category: room.category ?? 'general',
+      category: room.category === 'intake' ? 'general' : room.category ?? 'general',
       status: 'judge',
     });
   }
