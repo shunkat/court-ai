@@ -8,12 +8,13 @@ import { getRoomUser } from '../../firestore/room-user';
 
 type Props = {
   roomId: string
+  battleId: string
   title: string
   plaintiffId: string
   defendantId: string
 }
 
-export const sendEmail = async ({ roomId, title, plaintiffId, defendantId }: Props) => {
+export const sendEmail = async ({ roomId, battleId, title, plaintiffId, defendantId }: Props) => {
   const resend = new Resend(resendApiKey.value());
   return Promise.all([plaintiffId, defendantId].map(async (roomUserId) => {
     const user = await getRoomUser(roomUserId);
@@ -33,7 +34,7 @@ export const sendEmail = async ({ roomId, title, plaintiffId, defendantId }: Pro
       from: `Themis <${serviceEmail}>`,
       to: userInfo.email,
       subject: `🚀 Your Court Case is Ready, "${title}"`,
-      react: <CourtPreparationEmail name={user.name} title={title} url={`${appUrl}/${roomId}/battles`} />,
+      react: <CourtPreparationEmail name={user.name} title={title} url={`${appUrl}/room/${roomId}/battle/${battleId}`} />,
     });
 
     if (error) {

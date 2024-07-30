@@ -3,5 +3,5 @@ import { db } from '../config';
 import { BattleSchema } from './schema';
 
 export const addBattle = async (battle: BattleSchema) => {
-  await db.collection('battles').add({ ...battle, createdAt: FieldValue.serverTimestamp() });
+  return await db.collection('battles').add({ ...battle, createdAt: FieldValue.serverTimestamp() });
 };

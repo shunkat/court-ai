@@ -78,7 +78,7 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
     });
   }
 
-  await Promise.all([
+  const [, battle] = await Promise.all([
     addSummary(newSummary(roomId, room.judgeCount, finalJudgment)),
     addBattle({
       roomId: roomId,
@@ -86,9 +86,9 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
       contents: battleContents,
     }),
     updateRoom(roomId, { ...room, status: 'completed' }),
-    sendEmail({ roomId, title: room.name, plaintiffId: room.creatorId, defendantId: room.oppositeId }),
   ]);
-  return;
+
+  await sendEmail({ roomId, battleId: battle.id, title: room.name, plaintiffId: room.creatorId, defendantId: room.oppositeId });
 };
 
 const convertClaimsPrompt = (type: 'plaintiff' | 'defendant', claims: ChatSchema[]) => {
