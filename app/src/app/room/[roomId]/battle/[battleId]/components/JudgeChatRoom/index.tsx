@@ -13,16 +13,36 @@ import {
   where,
 } from "firebase/firestore";
 import { getClientConverter } from "@/app/resources/types/ClientFirestore";
-import { Battle } from "@/app/resources/types/Firestore";
+import { Battle, JudgmentSummary } from "@/app/resources/types/Firestore";
 import MessageBlock from "@/app/room/components/MessageBlock";
+import Link from "next/link";
 
 type Props = {
   roomId: string;
   battleId: string;
 };
+
 export default function ChatRoom({ roomId, battleId }: Props) {
   const [messages, setMessages] = useState<Battle["contents"]>([]);
   const [allLoaded, setAllLoaded] = useState(false);
+
+  const [summaryId, setSummaryId] = useState<string | null>(null);
+
+  useEffect(() => {
+    getDocs(
+      query(
+        collection(getFirestore(), `summaries`).withConverter(
+          getClientConverter<JudgmentSummary>()
+        ),
+        where("roomId", "==", roomId),
+        limit(1)
+      )
+    ).then((snapshot) => {
+      if (snapshot.empty) return;
+      const data = snapshot.docs[0].data();
+      setSummaryId(data.id);
+    });
+  }, [roomId]);
 
   useEffect(() => {
     getDoc(
@@ -68,7 +88,9 @@ export default function ChatRoom({ roomId, battleId }: Props) {
         {allLoaded && (
           <div className={style.allLoaded}>
             <div className={style.buttons}>
-              <button className={style.summary}>Go Summary</button>
+              <Link href={`/summary/${summaryId}`}>
+                <button className={style.summary}>Go Summary</button>
+              </Link>
             </div>
           </div>
         )}
