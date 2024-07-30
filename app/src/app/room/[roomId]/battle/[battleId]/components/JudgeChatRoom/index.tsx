@@ -88,9 +88,9 @@ export default function ChatRoom({ roomId, battleId }: Props) {
         {allLoaded && (
           <div className={style.allLoaded}>
             <div className={style.buttons}>
-              <Link href={`/summary/${summaryId}`}>
-                <button className={style.summary}>Go Summary</button>
-              </Link>
+              <button className={style.summary}>
+                <Link href={`/summary/${summaryId}`}>Go Summary</Link>
+              </button>
             </div>
           </div>
         )}
