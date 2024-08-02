@@ -1,6 +1,6 @@
 import { runFlow } from '@genkit-ai/flow';
-import { getChatsFromRoomUser, addChat } from '../firestore/chat';
-import { getRoom, updateRoom } from '../firestore/room';
+import { getChatsFromRoomUser, addChat, updateChats } from '../firestore/chat';
+import { getRoom } from '../firestore/room';
 import { ChatSchema, RoomCreatedSchema } from '../firestore/schema';
 import { getRoomUser, updateRoomUser } from '../firestore/room-user';
 import { handleIntakeFlow } from '../models/intake';
@@ -53,7 +53,7 @@ const handleIntake = async (chat: ChatSchema, room:RoomCreatedSchema ) => {
   }
 
   if (result.category !== 'null') {
-    await updateRoom(chat.roomId, { ...room, category: result.category });
+    await updateChats(chat.roomUserId, { ...chat, category: result.category });
   }
 
   return result.text;
