@@ -57,6 +57,7 @@ export const chatSchema = z.object({
     z.literal('system'),
     z.literal('user'),
   ]),
+  category: lawyerCategorySchema.optional(),
   createdAt: firestoreTimestampLooseSchema,
 });
 

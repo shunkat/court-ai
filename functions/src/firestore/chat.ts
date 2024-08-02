@@ -29,3 +29,7 @@ export const getChatsFromRoomUser = async (roomUserId: string, option?: {
 
   return chats;
 };
+
+export const updateChats = async(roomUserId: string, chat: ChatSchema) => {
+  await db.collection('chats').doc(roomUserId).update({ ...chat, updatedAt: FieldValue.serverTimestamp() });
+};
