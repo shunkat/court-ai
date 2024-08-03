@@ -66,7 +66,60 @@ ${input}
 \`\`\`json
   {message: {string}, isSufficient: {boolean}}
 \`\`\`
-The "message" field represents the response to the user, and the "isSufficient" field indicates whether the information is sufficient for litigation preparation.
+The "message" field represents the response to the user,
+and the "isSufficient" field indicates whether the information is sufficient for litigation preparation and if the user feels their arguments are sufficiently supported.
+
+### Examples:
+
+#### Input
+I have a signed contract from January 10th that shows the agreed payment terms.
+#### Output
+\`\`\`json
+{
+  "message": "The signed contract from January 10th clearly outlines the agreed payment terms, which will be crucial in demonstrating the expectations set between both parties.",
+  "isSufficient": true
+}
+\`\`\`
+
+#### Input
+Here are the emails where they acknowledged receiving the goods on March 5th.
+#### Output
+\`\`\`json
+{
+  "message": "The emails acknowledging receipt of the goods on March 5th are important evidence of the transaction completion. This will support your claim of fulfilling your part of the agreement.",
+  "isSufficient": true
+}
+\`\`\`
+
+#### Input
+I think we have covered everything we need for now.
+#### Output
+\`\`\`json
+{
+  "message": "If you believe we have covered all necessary points, you can proceed with your preparations. If you need further assistance, please let me know.",
+  "isSufficient": true
+}
+\`\`\`
+
+#### Input
+I want to add the witness statements about the incident on February 20th.
+#### Output
+\`\`\`json
+{
+  "message": "The witness statements about the incident on February 20th will be valuable in corroborating your version of events. Ensure they are properly documented and ready for presentation.",
+  "isSufficient": false
+}
+\`\`\`
+
+#### Input
+I think we're ready to move forward with this.
+#### Output
+\`\`\`json
+{
+  "message": "Great! If you feel everything is in order, you can proceed with your preparations. If there's anything else you need, feel free to ask.",
+  "isSufficient": true
+}
+\`\`\`
 `;
 };
 
