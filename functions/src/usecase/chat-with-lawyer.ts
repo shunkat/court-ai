@@ -1,6 +1,6 @@
 import { runFlow } from '@genkit-ai/flow';
-import { getChatsFromRoomUser, addChat, updateChats } from '../firestore/chat';
-import { getRoom } from '../firestore/room';
+import { getChatsFromRoomUser, addChat } from '../firestore/chat';
+import { getRoom, updateRoom } from '../firestore/room';
 import { ChatSchema, RoomCreatedSchema } from '../firestore/schema';
 import { getRoomUser, updateRoomUser } from '../firestore/room-user';
 import { handleIntakeFlow } from '../models/intake';
@@ -20,20 +20,11 @@ export const chatWithLawyer = async (chat: ChatSchema) => {
 
   const category = room.category;
 
-  const message = (!category || category === 'intake') ?
+  (!category || category === 'intake') ?
     await handleIntake(chat, room) : await handleClaim(chat, category);
-
-  if (!message) return;
-
-  await addChat({
-    roomId: chat.roomId,
-    roomUserId: chat.roomUserId,
-    role: 'model',
-    content: [{ text: message }],
-  });
 };
 
-const handleIntake = async (chat: ChatSchema, _room: RoomCreatedSchema ) => {
+const handleIntake = async (chat: ChatSchema, room: RoomCreatedSchema ) => {
   const history = await getChatsFromRoomUser(chat.roomUserId, { last: 5 });
 
   const result = await runFlow(handleIntakeFlow, {
@@ -53,8 +44,14 @@ const handleIntake = async (chat: ChatSchema, _room: RoomCreatedSchema ) => {
   }
 
   if (result.category !== 'null') {
-    await updateChats(chat.roomUserId, { ...chat, category: result.category });
+    await updateRoom(chat.roomId, { ...room, category: result.category });
   }
+  await addChat({
+    roomId: chat.roomId,
+    roomUserId: chat.roomUserId,
+    role: 'model',
+    content: [{ text: result.text }],
+  });
 
   return result.text;
 };
@@ -85,5 +82,13 @@ const handleClaim = async (chat: ChatSchema, category: LawyerCategorySchema ) =>
     await updateRoomUser(chat.roomUserId, { ...roomUser, claimStatus: 'sufficient' });
   }
 
-  return opt.message;
+  if (opt.message) {
+    await addChat({
+      roomId: chat.roomId,
+      roomUserId: chat.roomUserId,
+      role: 'model',
+      category,
+      content: [{ text: opt.message }],
+    });
+  }
 };
