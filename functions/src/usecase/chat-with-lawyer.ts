@@ -33,7 +33,7 @@ export const chatWithLawyer = async (chat: ChatSchema) => {
   });
 };
 
-const handleIntake = async (chat: ChatSchema, room:RoomCreatedSchema ) => {
+const handleIntake = async (chat: ChatSchema, _room: RoomCreatedSchema ) => {
   const history = await getChatsFromRoomUser(chat.roomUserId, { last: 5 });
 
   const result = await runFlow(handleIntakeFlow, {
