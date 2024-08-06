@@ -25,7 +25,7 @@ export function getAdminConverter<T extends AppModel>(): AdminConverter<T> {
         id: snapshot.id,
         ...data,
         createdAt: data.createdAt.toDate(),
-        updatedAt: data.updatedAt.toDate(),
+        // updatedAt: data.updatedAt.toDate(),
       } as T;
     },
   };
