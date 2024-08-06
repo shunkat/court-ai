@@ -34,7 +34,7 @@ export const sendEmail = async ({ roomId, battleId, title, plaintiffId, defendan
       from: `Themis <${serviceEmail.value()}>`,
       to: userInfo.email,
       subject: `🚀 Your Court Case is Ready, "${title}"`,
-      react: <CourtPreparationEmail name={user.name} title={title} url={`${appUrl}/room/${roomId}/battle/${battleId}`} />,
+      react: <CourtPreparationEmail name={user.name} title={title} url={`${appUrl.value()}/room/${roomId}/battle/${battleId}`} />,
     });
 
     if (error) {
