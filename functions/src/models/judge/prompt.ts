@@ -38,7 +38,6 @@ export const getSummarizePrompt = (input: string) => {
 ## Court Conversations and Evidence
 ${input}
 ## Output
-- Provide the output in JSON format.
 \`\`\`json
   {
     "mainSentence": {string},

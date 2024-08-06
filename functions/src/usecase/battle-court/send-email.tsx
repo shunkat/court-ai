@@ -31,7 +31,7 @@ export const sendEmail = async ({ roomId, battleId, title, plaintiffId, defendan
     if (!userInfo?.email) return;
 
     const { error } = await resend.emails.send({
-      from: `Themis <${serviceEmail}>`,
+      from: `Themis <${serviceEmail.value()}>`,
       to: userInfo.email,
       subject: `🚀 Your Court Case is Ready, "${title}"`,
       react: <CourtPreparationEmail name={user.name} title={title} url={`${appUrl}/room/${roomId}/battle/${battleId}`} />,
