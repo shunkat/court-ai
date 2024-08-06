@@ -17,12 +17,18 @@ type Props = {
 export default async function SummaryPage(props: Props) {
   const roomId = props.params.id;
 
-  // Firestore から裁判データを取得
   const summaryData = await AdminFirestore.collection("summaries")
-    .doc(roomId)
-    .withConverter(getAdminConverter<JudgmentSummary>())
-    .get()
-    .then((doc) => doc.data());
+  .where("roomId", "==", roomId) // Query based on roomId field
+  .withConverter(getAdminConverter<JudgmentSummary>())
+  .get()
+  .then((snapshot) => {
+    if (snapshot.empty) {
+      // Handle the case where no matching documents are found
+      return null; // or throw an error, etc.
+    } else {
+      return snapshot.docs[0].data(); // Return the data of the first matching document
+    }
+  });
 
   if (!summaryData) {
     // 裁判データが見つからない場合のエラー処理
