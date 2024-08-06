@@ -18,7 +18,7 @@ export default async function RoomPage(props: Props) {
           role: "model",
           content: [
             {
-              text: "Hello, my name is john.",
+              text: "Hello! I'm your legal assistant. Please briefly describe your legal issue so I can help you find the right lawyer.",
             },
           ],
           roomId: "",
