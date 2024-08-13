@@ -7,19 +7,18 @@ export const modelRoleSchema = z.union([
   z.literal('user'),
 ]);
 
+export const historySchema = z.array(z.object({
+  role: modelRoleSchema,
+  content: z.array(z.object({ text: z.string() })),
+})).max(15);
+
 export const inputSchema = z.object({
   prompt: z.string(),
-  history: z.array(z.object({
-    role: modelRoleSchema,
-    content: z.array(z.object({ text: z.string() })),
-  })).max(10),
+  history: historySchema,
 });
 
 export const outputSchema = z.string();
-export const summarizeClaimOutputSchema = z.object({
-  message: z.string().describe('Summarized response to the user based on the provided information. Include additional questions if necessary information is missing.'),
-  isSufficient: z.boolean().describe('Set to true if the claim is sufficient for court preparation. Set to false if more information is needed.'),
-});
+export const summarizeClaimOutputSchema = z.string();
 
 export const lawyerCategorySchema = z.union([
   z.literal('general'), // 一般(下記の法律に当てはまらない場合)

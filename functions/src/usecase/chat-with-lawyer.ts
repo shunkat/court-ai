@@ -4,7 +4,7 @@ import { getRoom, updateRoom } from '../firestore/room';
 import { ChatSchema, RoomCreatedSchema } from '../firestore/schema';
 import { getRoomUser, updateRoomUser } from '../firestore/room-user';
 import { handleIntakeFlow } from '../models/intake';
-import { lawyerSummarizeClaimFlows } from '../models/lawyer';
+import { lawyerSuggestionSufficientClaimFlow, lawyerSummarizeClaimFlows } from '../models/lawyer';
 import { LawyerCategorySchema } from '../models/lawyer/schema';
 
 export const chatWithLawyer = async (chat: ChatSchema) => {
@@ -57,38 +57,27 @@ const handleIntake = async (chat: ChatSchema, room: RoomCreatedSchema ) => {
 };
 
 const handleClaim = async (chat: ChatSchema, category: LawyerCategorySchema ) => {
-  const history = await getChatsFromRoomUser(chat.roomUserId, { last: 5 });
+  const history = await getChatsFromRoomUser(chat.roomUserId, { last: 9 }); // ユーザーから始めないとバグるので奇数にしている
 
-  const opt = await runFlow(lawyerSummarizeClaimFlows[category], {
+  const message = await runFlow(lawyerSummarizeClaimFlows[category], {
     prompt: chat.content.reduce((acc, cur) => acc + cur.text, ''),
     history,
   });
 
-  if (!opt) {
-    console.error('Failed to summarize claim');
-    await addChat({
-      roomId: chat.roomId,
-      roomUserId: chat.roomUserId,
-      role: 'model',
-      content: [{ text: 'Could you please elaborate a little more?' }],
-    });
-    return;
+  // sufficient check
+  const roomUser = await getRoomUser(chat.roomUserId);
+  if (roomUser && roomUser?.claimStatus !== 'sufficient') {
+    const isSufficient = await runFlow(lawyerSuggestionSufficientClaimFlow, (
+      [...history, { role: 'model', content: [{ text: message }] }]
+    ));
+    await updateRoomUser(chat.roomUserId, { ...roomUser, claimStatus: isSufficient ? 'sufficient' : 'shortage' });
   }
 
-  if (opt.isSufficient) {
-    const roomUser = await getRoomUser(chat.roomUserId);
-    if (roomUser?.claimStatus !== 'shortage') return;
-
-    await updateRoomUser(chat.roomUserId, { ...roomUser, claimStatus: 'sufficient' });
-  }
-
-  if (opt.message) {
-    await addChat({
-      roomId: chat.roomId,
-      roomUserId: chat.roomUserId,
-      role: 'model',
-      category,
-      content: [{ text: opt.message }],
-    });
-  }
+  await addChat({
+    roomId: chat.roomId,
+    roomUserId: chat.roomUserId,
+    role: 'model',
+    category,
+    content: [{ text: message ?? 'Could you please elaborate a little more?' }],
+  });
 };

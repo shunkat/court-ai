@@ -18,15 +18,19 @@ const handleIntakeFlow = defineFlow(
       ...input.history,
     ];
 
-    const llmResponse = await generate({
-      model: geminiPro,
-      prompt: input.prompt,
-      history,
-      config: { temperature: 1 },
-      output: { schema: intakeOutputSchema },
-    });
-
-    return llmResponse.output();
+    try {
+      const llmResponse = await generate({
+        model: geminiPro,
+        prompt: input.prompt,
+        history,
+        config: { temperature: 1 },
+        output: { schema: intakeOutputSchema },
+      });
+      return llmResponse.output();
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   }
 );
 

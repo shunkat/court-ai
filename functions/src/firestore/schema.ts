@@ -67,7 +67,7 @@ export const roomUserSchema = z.object({
   name: z.string(),
   roomId: z.string(),
   userId: z.string(),
-  claimStatus: z.union([z.literal('shortage'), z.literal('sufficient'), z.literal('finished')]),
+  claimStatus: z.union([z.literal('shortage'), z.literal('sufficient'), z.literal('finished')]).optional(),
   createdAt: firestoreTimestampSchema,
 });
 export type RoomUserSchema = z.infer<typeof roomUserSchema>;

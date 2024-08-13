@@ -1,9 +1,10 @@
 import { generate } from '@genkit-ai/ai';
 import { MessageData } from '@genkit-ai/ai/model';
-import { geminiPro } from '@genkit-ai/googleai';
+import { gemini15Flash, gemini15Pro } from '@genkit-ai/googleai';
 import { defineFlow } from '@genkit-ai/flow';
-import { inputSchema, LawyerCategorySchema, outputSchema, summarizeClaimOutputSchema } from './schema';
+import { historySchema, inputSchema, LawyerCategorySchema, outputSchema, summarizeClaimOutputSchema } from './schema';
 import path from 'path';
+import { z } from 'zod';
 
 const lawyerSuggestionFlow = (category: LawyerCategorySchema, name: string) => defineFlow(
   {
@@ -18,7 +19,7 @@ const lawyerSuggestionFlow = (category: LawyerCategorySchema, name: string) => d
     ];
 
     const llmResponse = await generate({
-      model: geminiPro,
+      model: gemini15Flash,
       prompt: input.prompt,
       history,
       config: { temperature: 1 },
@@ -32,7 +33,7 @@ export const lawyerSummarizeClaimFlow = (category: LawyerCategorySchema, name: s
   {
     name,
     inputSchema: inputSchema,
-    outputSchema: summarizeClaimOutputSchema.nullable(),
+    outputSchema: summarizeClaimOutputSchema,
   },
   async (input) => {
     const history: MessageData[] = [
@@ -40,87 +41,61 @@ export const lawyerSummarizeClaimFlow = (category: LawyerCategorySchema, name: s
       ...input.history,
     ];
 
+    try {
+      const llmResponse = await generate({
+        model: gemini15Pro,
+        // eslint-disable-next-line max-len
+        prompt: `You are currently in the pre-trial preparation phase. Your task is to support the user in organizing evidence and preparing for trial. During the conversation, focus on short and clear messages to maintain the flow. Begin by identifying the user's concerns and checking whether there is sufficient evidence to support their case. If evidence is missing or unclear, ask specific follow-up questions to gather the necessary details. Ensure that all required materials are ready to proceed with the trial.
+#user input
+${input.prompt}`,
+        history,
+        config: { temperature: 1 },
+      });
+
+      return llmResponse.text();
+    } catch (error) {
+      console.error(error);
+      return 'Could you please elaborate a little more?';
+    }
+  },
+);
+
+export const lawyerSuggestionSufficientClaimFlow = defineFlow(
+  {
+    name: 'lawyerSuggestionSufficientClaimFlow',
+    inputSchema: historySchema,
+    outputSchema: z.string(),
+  },
+  async (input) => {
+    const history: MessageData[] = input;
+
+    const prompt = `The user intends to file a lawsuit and is currently in the litigation preparation stage.
+Based on the conversation so far, your role is to determine whether the user should proceed to the litigation stage.
+## Conditions for proceeding to the litigation stage
+Proceed if any of the following conditions apply:
+- Answer 'true' if the information provided by the user is sufficient to prepare a lawsuit.
+- If more than three pieces of evidence or one or more pieces of very strong evidence are submitted, this is considered sufficient.
+- If it is not sufficient, return 'false'.
+- If you deem it insufficient, but the user deems it sufficient preparation.
+  - Examples - "This is sufficient." - "This is sufficient preparation." - "I'm tired of waiting" - "There is no more evidence.
+## Output.
+Returns absolutely true or false.
+Example - true`;
+
     const llmResponse = await generate({
-      model: geminiPro,
-      prompt: getUserPrompt(input.prompt),
+      model: gemini15Pro,
+      prompt: prompt,
       history,
       config: { temperature: 1 },
-      output: { schema: summarizeClaimOutputSchema },
     });
 
-    return llmResponse.output();
+    return llmResponse.text();
   },
 );
 
 const getSystemPrompt = async (category: LawyerCategorySchema) => {
   const filePath = path.resolve(__dirname, `./prompts/characters/${category}`);
   return await import(filePath).then((module) => module.prompt);
-};
-
-const getUserPrompt = (input: string) => {
-  return `{Output} according to the specified format based on the user's {Input}.
-## Input
-${input}
-## Output
-- Provide the output in JSON format.
-\`\`\`json
-  {message: {string}, isSufficient: {boolean}}
-\`\`\`
-The "message" field represents the response to the user,
-and the "isSufficient" field indicates whether the information is sufficient for litigation preparation and if the user feels their arguments are sufficiently supported.
-
-### Examples:
-
-#### Input
-I have a signed contract from January 10th that shows the agreed payment terms.
-#### Output
-\`\`\`json
-{
-  "message": "The signed contract from January 10th clearly outlines the agreed payment terms, which will be crucial in demonstrating the expectations set between both parties.",
-  "isSufficient": true
-}
-\`\`\`
-
-#### Input
-Here are the emails where they acknowledged receiving the goods on March 5th.
-#### Output
-\`\`\`json
-{
-  "message": "The emails acknowledging receipt of the goods on March 5th are important evidence of the transaction completion. This will support your claim of fulfilling your part of the agreement.",
-  "isSufficient": true
-}
-\`\`\`
-
-#### Input
-I think we have covered everything we need for now.
-#### Output
-\`\`\`json
-{
-  "message": "If you believe we have covered all necessary points, you can proceed with your preparations. If you need further assistance, please let me know.",
-  "isSufficient": true
-}
-\`\`\`
-
-#### Input
-I want to add the witness statements about the incident on February 20th.
-#### Output
-\`\`\`json
-{
-  "message": "The witness statements about the incident on February 20th will be valuable in corroborating your version of events. Ensure they are properly documented and ready for presentation.",
-  "isSufficient": false
-}
-\`\`\`
-
-#### Input
-I think we're ready to move forward with this.
-#### Output
-\`\`\`json
-{
-  "message": "Great! If you feel everything is in order, you can proceed with your preparations. If there's anything else you need, feel free to ask.",
-  "isSufficient": true
-}
-\`\`\`
-`;
 };
 
 export const lawyerFlows = {

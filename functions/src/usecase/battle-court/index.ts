@@ -44,6 +44,8 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
     text: await Judge.extractIssues(battleContentsPrompt),
   });
 
+  await new Promise((resolve) => setTimeout(resolve, 10*1000));
+
   // discussion
   await Promise.all(Array.from({ length: 1 }).map(async (_) => {
     updateBattleOnMemory({
@@ -63,6 +65,8 @@ export const battleCourt = async (room: RoomJudgeSchema, roomId: string) => {
       text: await Lawyer.provideEvidence({ role: 'defendant', category: room.category, claimsPrompt: defendantClaimsText, conversationsPrompt: battleContentsPrompt }),
     });
   }));
+
+  await new Promise((resolve) => setTimeout(resolve, 10*1000));
 
   const finalJudgment = await Judge.finalJudgment(battleContentsPrompt);
   if (!finalJudgment) {

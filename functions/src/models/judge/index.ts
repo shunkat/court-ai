@@ -1,11 +1,11 @@
 import { generate } from '@genkit-ai/ai';
 import { MessageData } from '@genkit-ai/ai/model';
-import { geminiPro } from '@genkit-ai/googleai';
 import { z } from 'zod';
 import { getSummarizePrompt, judgeSystemPrompt } from './prompt';
 import { defineFlow } from '@genkit-ai/flow';
 import { modelRoleSchema } from '../lawyer/schema';
 import { summarizeOutputSchema } from './schema';
+import { gemini15Flash } from '@genkit-ai/googleai';
 
 export const judgeSuggestionFlow = defineFlow(
   {
@@ -26,7 +26,7 @@ export const judgeSuggestionFlow = defineFlow(
     ];
 
     const llmResponse = await generate({
-      model: geminiPro,
+      model: gemini15Flash,
       prompt: input.prompt,
       history,
       config: { temperature: 1 },
@@ -54,13 +54,17 @@ export const judgeSummarizeFlow = defineFlow(
       ...input.history,
     ];
 
-    const llmResponse = await generate({
-      model: geminiPro,
-      prompt: getSummarizePrompt(input.conversation),
-      history,
-      config: { temperature: 1 },
-    });
-
-    return llmResponse.output();
+    try {
+      const llmResponse = await generate({
+        model: gemini15Flash,
+        prompt: getSummarizePrompt(input.conversation),
+        history,
+        config: { temperature: 1 },
+      });
+      return llmResponse.output();
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   },
 );

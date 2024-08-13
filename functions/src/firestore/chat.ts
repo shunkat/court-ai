@@ -12,10 +12,10 @@ export const getChatsFromRoomUser = async (roomUserId: string, option?: {
   let q = db.collection('chats').where('roomUserId', '==', roomUserId);
 
   if (option?.last) {
-    q = q.limit(option.last) .orderBy('createdAt', 'desc');
+    q = q.limit(option.last);
   }
 
-  const snapshot = await q.get();
+  const snapshot = await q.orderBy('createdAt', 'desc').get();
 
   const chats = snapshot.docs.map((doc) => {
     const chat = chatSchema.safeParse(doc.data());
